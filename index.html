@@ -15,7 +15,6 @@
             margin: 0;
             height: 100%;
             background: red;
-            padding: 6px 17px;
             font-family: "Roboto", sans-serif;
             font-size: 14px;
             color: #FFF;
@@ -99,6 +98,39 @@
     <script src="lib.js"></script>
     <script>
 
+        // Config
+        let config = {
+            overscan: true,
+            apikey: "fe8093fa020affe377f1f2cca0c60460",
+            location: "-33.75,150.7",
+            playsound: true
+        }
+
+        // Init
+        var getUrlParameter = function getUrlParameter(sParam) {
+            var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+                sURLVariables = sPageURL.split("&"), sParameterName
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split("=")
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : sParameterName[1]
+                }
+            }
+        }
+
+        if (getUrlParameter("overscan") === "false") config.overscan = false
+        if (getUrlParameter("key")) config.apikey = getUrlParameter("key")
+        if (getUrlParameter("location")) config.location = getUrlParameter("location")
+        if (getUrlParameter("sound") === "false") config.playsound = false
+
+        $(function() {
+            console.log("CONFIG: ", config)
+
+            if (config.overscan) $("body").css("padding", "6px 17px")
+        })
+
         // Clock
         $(function() {
             let clock = function() {
@@ -111,9 +143,7 @@
 
         // Weather
         $(function() {
-            let key = "fe8093fa020affe377f1f2cca0c60460"
-            let location = "-33.75,150.7"
-            let url = "https://api.forecast.io/forecast/" + key + "/" + location + "?units=si"
+            let url = "https://api.forecast.io/forecast/" + config.apikey + "/" + config.location + "?units=si"
 
             let weather = function() {
                 console.log("GET: Weather - " + moment().format("DD/MM/YY h:mm:ss a"))
@@ -171,8 +201,13 @@
                 $(".content").css("background", "#E44242")
             }
 
-            if (data.alarm) sound_alarm.play()
-            else if (type === 1) sound_alert.play()
+            if (config.playsound) {
+                if (data.alarm) {
+                    sound_alarm.play()
+                } else if (type === 1) {
+                    sound_alert.play()
+                }
+            }
 
             if (data.situation !== 0) {
                 if (type === 0) {
