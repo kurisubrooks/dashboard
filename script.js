@@ -25,6 +25,14 @@ if (getUrlParameter("key")) config.apikey = getUrlParameter("key")
 if (getUrlParameter("location")) config.location = getUrlParameter("location")
 if (getUrlParameter("sound") === "false") config.playsound = false
 
+setInterval(function() {
+    if (!navigator.onLine) {
+        $(".sidebar").css("background", "#FDD835")
+    } else if (navigator.onLine) {
+        $(".sidebar").css("background", "#222")
+    }
+}, 200)
+
 $(function() {
     console.log("CONFIG: ", config)
 
