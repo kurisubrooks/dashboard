@@ -109,7 +109,6 @@ sup {
     font-size: 18px;
     text-align: center;
     white-space: nowrap;
-    overflow-y: scroll;
     border: none;
 }
 
