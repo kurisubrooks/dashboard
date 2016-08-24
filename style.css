@@ -137,7 +137,7 @@ sup {
 }
 
 /* for senpai */
-@media (max-width: 980px) {
+@media (min-width: 1800px) {
     .clock,
     .weather,
     .shake {
