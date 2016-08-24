@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed" rel="stylesheet">
+    <style>
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            height: 100%;
+            background: red;
+            padding: 6px 17px;
+            font-family: "Roboto", sans-serif;
+            font-size: 14px;
+            color: #FFF;
+        }
+
+        p {
+            font-family: "Roboto Condensed", "Roboto", sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        ol {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-size: 32px;
+        }
+
+        li {
+            display: inline-block;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        li:not(:last-child)::after {
+            color: rgba(255, 255, 255, 0.5);
+            content: "　/　"
+        }
+
+        sub,
+        sup {
+            vertical-align: inherit;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .container {
+            display: flex;
+            height: 100%;
+        }
+
+        .sidebar {
+            height: 100%;
+            width: 300px;
+            background: #232323;
+            padding: 20px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .content {
+            height: 100%;
+            background: #333;
+            padding: 20px 20px 20px 80px;
+            flex: 5;
+        }
+
+        .sidebar div,
+        .content div {
+            padding: 40px 0;
+        }
+
+        .content div:not(:last-child) {
+            border-bottom: 1px solid #444;
+        }
+
+        .clock {
+            font-size: 70px;
+        }
+
+        .weather {
+            font-size: 70px;
+        }
+
+        .shake {
+            font-size: 70px;
+        }
+
+    </style>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="lib.js"></script>
+    <script>
+
+        // Clock
+        $(function() {
+            let clock = function() {
+                $("#time").text(moment().format("h:mm:ss A"))
+            }
+
+            setInterval(clock, 100)
+            clock()
+        })
+
+        // Weather
+        $(function() {
+            let key = "fe8093fa020affe377f1f2cca0c60460"
+            let location = "-33.75,150.7"
+            let url = "https://api.forecast.io/forecast/" + key + "/" + location + "?units=si"
+
+            let weather = function() {
+                console.log("GET: Weather - " + moment().format("DD/MM/YY h:mm:ss a"))
+                $.ajax({
+                    url: url,
+                    dataType: "jsonp",
+                    success: function(data) {
+                        console.log("OK: Weather")
+
+                        $("#icon").attr("src", "./icons/" + data.currently.icon + ".png")
+                        $("#temperature").text((Math.round(data.currently.temperature * 10) / 10) + "°")
+                        $("#condition").text(data.currently.summary)
+                        $("#humidity").text((Math.round(data.currently.humidity * 100)) + "%")
+                        $("#rainchance").text((Math.round((data.currently.precipProbability * 100) / 5) * 5) + "%")
+                    },
+                    error: function(data) {
+                        console.error("ERR: Weather")
+                        console.error(data)
+                    }
+                })
+            }
+
+            setInterval(weather, 300000)
+            weather()
+        })
+
+        // Shake
+        let socket = io("http://shake.kurisubrooks.com:3390")
+        let sound_alarm = new Audio("./audio/alarm.mp3")
+        let sound_alert = new Audio("./audio/nhk.mp3")
+        let sound_info = new Audio("./audio/info.mp3")
+
+        socket.on("connect", function() {
+            socket.emit("auth", { version: 2.1 })
+        })
+
+        socket.on("disconnect", function() {
+            console.error("DISCON: Shake")
+        })
+
+        socket.on("auth", function(data) {
+            if (data.ok) console.log("OK: Shake")
+            else console.log("ERR: Shake - bad auth")
+        })
+
+        let eew = function(data, type) {
+            data = (typeof data !== "object") ? JSON.parse(data) : data
+
+            $("#epicenter").text(data.details.epicenter.en)
+            $("#seismic").text(data.details.seismic.en)
+            $("#magnitude").text(data.details.magnitude)
+            $("#depth").text(data.details.geography.depth)
+
+            if (type === 1) {
+                $(".content").css("background", "#E44242")
+            }
+
+            if (data.alarm) sound_alarm.play()
+            else if (type === 1) sound_alert.play()
+
+            if (data.situation !== 0) {
+                if (type === 0) {
+                    timeout(0, true)
+                } else {
+                    if (data.situation === 1) {
+                        timeout(60000, true)
+                    } else if (data.situation === 2) {
+                        timeout(50, false)
+                    }
+                }
+            }
+        }
+
+        let timeout = function(time, change) {
+            setTimeout(function() {
+                $(".content").css("background", "#333")
+            }, time)
+        }
+
+        $(function() {
+            socket.on("quake.eew", function(data) {
+                eew(data, 1)
+            })
+
+            $.getJSON("http://shake.kurisubrooks.com:3390/api/quake.last", function(data) {
+                eew(data, 0)
+            })
+        })
+
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="clock">
+                <img src="./icons/time.svg" height="80px" />
+            </div>
+
+            <div class="weather">
+                <img src="./icons/unknown.png" height="112px" id="icon" />
+            </div>
+
+            <div class="shake">
+                <img src="./icons/shake.png" height="100px" />
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="clock">
+                <p id="time">...</p>
+            </div>
+
+            <div class="weather">
+                <p id="temperature">...°</p>
+                <ol>
+                    <li id="condition">...</li>
+                    <li><sup>Humidity</sup>&nbsp;&nbsp;<span id="humidity">...%</span></li>
+                    <li><sup>Chance of Rain</sup>&nbsp;&nbsp;<span id="rainchance">...%</span></li>
+                </ol>
+            </div>
+
+            <div class="shake">
+                <p id="epicenter">...</p>
+                <ol>
+                    <li><sup>Seismic</sup>&nbsp;&nbsp;<span id="seismic">...</span></li>
+                    <li><sup>Magnitude</sup>&nbsp;&nbsp;<span id="magnitude">...</span></li>
+                    <li><sup>Depth</sup>&nbsp;&nbsp;<span id="depth">...</span>km</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
