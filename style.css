@@ -8,7 +8,7 @@ html, body {
     margin: 0;
     height: 100%;
     background: red;
-    font-family: "Roboto", sans-serif;
+    font-family: "Roboto Condensed", "Roboto", sans-serif;
     font-size: 14px;
     color: #FFF;
 }
@@ -134,13 +134,4 @@ sup {
 
 .shake {
     font-size: 80px;
-}
-
-/* for senpai */
-@media (min-width: 1800px) {
-    .clock,
-    .weather,
-    .shake {
-        font-size: 110px !important;
-    }
 }
