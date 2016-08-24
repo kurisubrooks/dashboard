@@ -79,8 +79,8 @@ $(function() {
                     let container = $("<div class='item'></div>")
                     let day = $("<p></p>").text(moment.unix(v.time).format("ddd"))
                     let icon = $("<img height='48px' />").attr("src", "./icons/" + v.icon + ".png")
-                    let max = $("<p id='max'></p>").text(Math.round(v.temperatureMin))
-                    let min = $("<p id='min'></p>").text(Math.round(v.temperatureMax))
+                    let max = $("<p id='max'></p>").text(Math.round(v.temperatureMax))
+                    let min = $("<p id='min'></p>").text(Math.round(v.temperatureMin))
 
                     container.append(day)
                     container.append(icon)
