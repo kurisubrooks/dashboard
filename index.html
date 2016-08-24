@@ -2,243 +2,12 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed" rel="stylesheet">
-    <style>
-
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-        }
-
-        html, body {
-            margin: 0;
-            height: 100%;
-            background: red;
-            font-family: "Roboto", sans-serif;
-            font-size: 14px;
-            color: #FFF;
-        }
-
-        p {
-            font-family: "Roboto Condensed", "Roboto", sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        ol {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-            font-size: 32px;
-        }
-
-        li {
-            display: inline-block;
-            margin: 0;
-            padding: 0;
-            list-style: none;
-        }
-
-        li:not(:last-child)::after {
-            color: rgba(255, 255, 255, 0.5);
-            content: "　/　"
-        }
-
-        sub,
-        sup {
-            vertical-align: inherit;
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .container {
-            display: flex;
-            height: 100%;
-        }
-
-        .sidebar {
-            height: 100%;
-            width: 300px;
-            background: #232323;
-            padding: 20px;
-            text-align: center;
-            flex: 1;
-        }
-
-        .content {
-            height: 100%;
-            background: #333;
-            padding: 20px 20px 20px 80px;
-            flex: 5;
-        }
-
-        .sidebar div,
-        .content div {
-            padding: 40px 0;
-        }
-
-        .content div:not(:last-child) {
-            border-bottom: 1px solid #444;
-        }
-
-        .clock {
-            font-size: 70px;
-        }
-
-        .weather {
-            font-size: 70px;
-        }
-
-        .shake {
-            font-size: 70px;
-        }
-
-    </style>
-    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-    <script src="lib.js"></script>
-    <script>
-
-        // Config
-        let config = {
-            overscan: true,
-            apikey: "fe8093fa020affe377f1f2cca0c60460",
-            location: "-33.75,150.7",
-            playsound: true
-        }
-
-        // Init
-        var getUrlParameter = function getUrlParameter(sParam) {
-            var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-                sURLVariables = sPageURL.split("&"), sParameterName
-
-            for (i = 0; i < sURLVariables.length; i++) {
-                sParameterName = sURLVariables[i].split("=")
-
-                if (sParameterName[0] === sParam) {
-                    return sParameterName[1] === undefined ? true : sParameterName[1]
-                }
-            }
-        }
-
-        if (getUrlParameter("overscan") === "false") config.overscan = false
-        if (getUrlParameter("key")) config.apikey = getUrlParameter("key")
-        if (getUrlParameter("location")) config.location = getUrlParameter("location")
-        if (getUrlParameter("sound") === "false") config.playsound = false
-
-        $(function() {
-            console.log("CONFIG: ", config)
-
-            if (config.overscan) $("body").css("padding", "6px 17px")
-        })
-
-        // Clock
-        $(function() {
-            let clock = function() {
-                $("#time").text(moment().format("h:mm:ss A"))
-            }
-
-            setInterval(clock, 100)
-            clock()
-        })
-
-        // Weather
-        $(function() {
-            let url = "https://api.forecast.io/forecast/" + config.apikey + "/" + config.location + "?units=si"
-
-            let weather = function() {
-                console.log("GET: Weather - " + moment().format("DD/MM/YY h:mm:ss a"))
-                $.ajax({
-                    url: url,
-                    dataType: "jsonp",
-                    success: function(data) {
-                        console.log("OK: Weather")
-
-                        $("#icon").attr("src", "./icons/" + data.currently.icon + ".png")
-                        $("#temperature").text((Math.round(data.currently.temperature * 10) / 10) + "°")
-                        $("#condition").text(data.currently.summary)
-                        $("#humidity").text((Math.round(data.currently.humidity * 100)) + "%")
-                        $("#rainchance").text((Math.round((data.currently.precipProbability * 100) / 5) * 5) + "%")
-                    },
-                    error: function(data) {
-                        console.error("ERR: Weather")
-                        console.error(data)
-                    }
-                })
-            }
-
-            setInterval(weather, 300000)
-            weather()
-        })
-
-        // Shake
-        let socket = io("http://shake.kurisubrooks.com:3390")
-        let sound_alarm = new Audio("./audio/alarm.mp3")
-        let sound_alert = new Audio("./audio/nhk.mp3")
-        let sound_info = new Audio("./audio/info.mp3")
-
-        socket.on("connect", function() {
-            socket.emit("auth", { version: 2.1 })
-        })
-
-        socket.on("disconnect", function() {
-            console.error("DISCON: Shake")
-        })
-
-        socket.on("auth", function(data) {
-            if (data.ok) console.log("OK: Shake")
-            else console.log("ERR: Shake - bad auth")
-        })
-
-        let eew = function(data, type) {
-            data = (typeof data !== "object") ? JSON.parse(data) : data
-
-            $("#epicenter").text(data.details.epicenter.en)
-            $("#seismic").text(data.details.seismic.en)
-            $("#magnitude").text(data.details.magnitude)
-            $("#depth").text(data.details.geography.depth)
-
-            if (type === 1) {
-                $(".content").css("background", "#E44242")
-            }
-
-            if (config.playsound) {
-                if (data.alarm) {
-                    sound_alarm.play()
-                } else if (type === 1) {
-                    sound_alert.play()
-                }
-            }
-
-            if (data.situation !== 0) {
-                if (type === 0) {
-                    timeout(0, true)
-                } else {
-                    if (data.situation === 1) {
-                        timeout(60000, true)
-                    } else if (data.situation === 2) {
-                        timeout(50, false)
-                    }
-                }
-            }
-        }
-
-        let timeout = function(time, change) {
-            setTimeout(function() {
-                $(".content").css("background", "#333")
-            }, time)
-        }
-
-        $(function() {
-            socket.on("quake.eew", function(data) {
-                eew(data, 1)
-            })
-
-            $.getJSON("http://shake.kurisubrooks.com:3390/api/quake.last", function(data) {
-                eew(data, 0)
-            })
-        })
-
-    </script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed|Material+Icons" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
+    <script src="script.js"></script>
 </head>
 <body>
 
@@ -263,11 +32,17 @@
             </div>
 
             <div class="weather">
-                <p id="temperature">...°</p>
+                <p>
+                    <span id="temperature">...</span>°<sup id="wc">c</sup>
+                </p>
                 <ol>
                     <li id="condition">...</li>
                     <li><sup>Humidity</sup>&nbsp;&nbsp;<span id="humidity">...%</span></li>
                     <li><sup>Chance of Rain</sup>&nbsp;&nbsp;<span id="rainchance">...%</span></li>
+
+                    <span id="lastchecked">
+                        <i class="material-icons">cached</i> <span id="checked">...</span>
+                    </span>
                 </ol>
             </div>
 
