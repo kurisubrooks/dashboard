@@ -25,14 +25,6 @@ if (getUrlParameter("key")) config.apikey = getUrlParameter("key")
 if (getUrlParameter("location")) config.location = getUrlParameter("location")
 if (getUrlParameter("sound") === "false") config.playsound = false
 
-setInterval(function() {
-    if (!navigator.onLine) {
-        $(".sidebar").css("background", "#FDD835")
-    } else if (navigator.onLine) {
-        $(".sidebar").css("background", "#222")
-    }
-}, 200)
-
 $(function() {
     console.log("CONFIG: ", config)
 
@@ -130,6 +122,7 @@ let eew = function(data, type) {
     $("#depth").text(data.details.geography.depth)
 
     if (type === 1) {
+        $(".sidebar").css("background", "#C42E2E")
         $(".content").css("background", "#E44242")
     }
 
@@ -156,6 +149,7 @@ let eew = function(data, type) {
 
 let timeout = function(time, change) {
     setTimeout(function() {
+        $(".sidebar").css("background", "#222")
         $(".content").css("background", "#333")
     }, time)
 }
