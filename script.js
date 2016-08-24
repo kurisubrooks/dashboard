@@ -61,12 +61,35 @@ $(function() {
             success: function(data) {
                 console.log("OK: Weather")
 
+                // Current
                 $("#icon").attr("src", "./icons/" + data.currently.icon + ".png")
                 $("#temperature").text(Math.round(data.currently.temperature * 10) / 10)
                 $("#condition").text(data.currently.summary)
                 $("#humidity").text((Math.round(data.currently.humidity * 100)) + "%")
                 $("#rainchance").text((Math.round((data.currently.precipProbability * 100) / 5) * 5) + "%")
                 $("#checked").text(moment().format("h:mm a"))
+
+                // Forecast
+
+                let all = $("<div></div>")
+
+                data.daily.data.forEach(function(v) {
+                    console.log(v)
+
+                    let container = $("<div class='item'></div>")
+                    let day = $("<p></p>").text(moment.unix(v.time).format("ddd"))
+                    let icon = $("<img height='48px' />").attr("src", "./icons/" + v.icon + ".png")
+                    let max = $("<p id='max'></p>").text(Math.round(v.temperatureMin))
+                    let min = $("<p id='min'></p>").text(Math.round(v.temperatureMax))
+
+                    container.append(day)
+                    container.append(icon)
+                    container.append(max)
+                    container.append(min)
+                    all.append(container)
+                })
+
+                $("#forecast").html(all)
             },
             error: function(data) {
                 console.error("ERR: Weather")

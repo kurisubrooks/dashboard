@@ -102,6 +102,37 @@ sup {
     border: none;
 }
 
+.weather .forecast {
+    display: inline-block;
+    padding: 0;
+    padding-top: 30px;
+    font-size: 18px;
+    text-align: center;
+    white-space: nowrap;
+    overflow-y: scroll;
+    border: none;
+}
+
+.weather .forecast div,
+.weather .forecast .item {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.weather .forecast .item {
+    margin-right: 50px;
+}
+
+.weather .forecast .item p {
+    padding: 2px 0;
+}
+
+.weather .forecast .item #min {
+    color: rgba(255, 255, 255, 0.5);
+}
+
 .shake {
     font-size: 70px;
 }
