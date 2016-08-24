@@ -135,3 +135,12 @@ sup {
 .shake {
     font-size: 80px;
 }
+
+/* for senpai */
+@media (max-width: 980px) {
+    .clock,
+    .weather,
+    .shake {
+        font-size: 110px !important;
+    }
+}
