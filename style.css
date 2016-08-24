@@ -1,0 +1,107 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    height: 100%;
+    background: red;
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+    color: #FFF;
+}
+
+p {
+    font-family: "Roboto Condensed", "Roboto", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 32px;
+}
+
+li {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+li:not(:last-of-type)::after {
+    color: rgba(255, 255, 255, 0.5);
+    content: "\00a0　/　"
+}
+
+sub,
+sup {
+    vertical-align: inherit;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.material-icons {
+    vertical-align: text-top;
+    font-size: 19px;
+}
+
+.container {
+    display: flex;
+    height: 100%;
+}
+
+.sidebar {
+    height: 100%;
+    width: 300px;
+    background: #222;
+    padding: 20px;
+    text-align: center;
+    flex: 1;
+}
+
+.content {
+    height: 100%;
+    background: #333;
+    padding: 20px 20px 20px 80px;
+    flex: 5;
+}
+
+.sidebar div,
+.content div {
+    padding: 40px 0;
+}
+
+.content div:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.clock {
+    font-size: 70px;
+}
+
+.weather {
+    font-size: 70px;
+}
+
+.weather #wc {
+    padding-left: 3px;
+    vertical-align: top;
+    font-size: 48px;
+    color: #FFF;
+}
+
+.weather #lastchecked {
+    padding: 10px 0 0 20px;
+    display: inline-block;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 16px;
+    border: none;
+}
+
+.shake {
+    font-size: 70px;
+}
