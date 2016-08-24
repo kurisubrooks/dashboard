@@ -80,11 +80,11 @@ sup {
 }
 
 .clock {
-    font-size: 70px;
+    font-size: 80px;
 }
 
 .weather {
-    font-size: 70px;
+    font-size: 80px;
 }
 
 .weather #wc {
@@ -133,5 +133,5 @@ sup {
 }
 
 .shake {
-    font-size: 70px;
+    font-size: 80px;
 }
