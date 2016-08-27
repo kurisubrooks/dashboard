@@ -11,6 +11,7 @@ html, body {
     font-family: "Roboto Condensed", sans-serif;
     font-size: 14px;
     color: #FFF;
+    -webkit-font-smoothing: antialiased;
 }
 
 p {
@@ -134,4 +135,60 @@ sup {
 
 .shake {
     font-size: 80px;
+}
+
+.overlay {
+    display: none;
+    font-family: "Roboto", sans-serif;
+    z-index: 10;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.overlay p {
+    font-family: "Roboto", sans-serif;
+}
+
+.overlay b {
+    display: block;
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+.overlay input[type=text] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    margin: 10px 0;
+    min-width: 200px;
+    padding: 5px 16px;
+    border: 1px solid #EEE;
+    border-radius: 2px;
+}
+
+.overlay input[type=button] {
+    font-size: 1.2em;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border: none;
+    background: #5B5;
+    color: #FFF;
+    padding: 6px 18px;
+    border-radius: 2px;
+}
+
+.overlay .config {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    color: #222;
+    padding: 20px 50px;
+    border-radius: 2px;
+    box-shadow: 0px 2px 10px 0px rgba(0,0,0,0.75);
 }
