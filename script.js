@@ -1,12 +1,12 @@
 // Config
 let config = {
-    overscan: true,
-    apikey: "fe8093fa020affe377f1f2cca0c60460",
-    location: "-33.75,150.7",
+    overscan: false,
+    apikey: null,
+    location: null,
     playsound: true
 }
 
-// Init
+// Get URL Params
 let getUrlParameter = function getUrlParameter(sParam) {
     let sPageURL = decodeURIComponent(window.location.search.substring(1)),
         sURLVariables = sPageURL.split("&"), sParameterName
@@ -14,85 +14,63 @@ let getUrlParameter = function getUrlParameter(sParam) {
     for (i = 0; i < sURLVariables.length; i++) {
         sParameterName = sURLVariables[i].split("=")
 
-        if (sParameterName[0] === sParam) {
+        if (sParameterName[0] === sParam)
             return sParameterName[1] === undefined ? true : sParameterName[1]
-        }
     }
 }
 
-if (getUrlParameter("overscan") === "false") config.overscan = false
-if (getUrlParameter("key")) config.apikey = getUrlParameter("key")
-if (getUrlParameter("location")) config.location = getUrlParameter("location")
-if (getUrlParameter("sound") === "false") config.playsound = false
-
-$(function() {
-    console.log("CONFIG: ", config)
-
-    if (config.overscan) $("body").css("padding", "6px 17px")
-})
-
 // Clock
-$(function() {
-    let clock = function() {
-        $("#time").text(moment().format("h:mm:ss a"))
-    }
-
-    setInterval(clock, 100)
-    clock()
-})
+let clock = function() {
+    $("#time").text(moment().format("h:mm:ss a"))
+}
 
 // Weather
-$(function() {
+let weather = function() {
     let url = "https://api.forecast.io/forecast/" + config.apikey + "/" + config.location + "?units=si"
 
-    let weather = function() {
-        console.log("GET: Weather - " + moment().format("DD/MM/YY h:mm:ss a"))
-        $.ajax({
-            url: url,
-            dataType: "jsonp",
-            success: function(data) {
-                console.log("OK: Weather")
+    console.log("GET: Weather - " + moment().format("DD/MM/YY h:mm:ss a"))
 
-                // Current
-                $("#icon").attr("src", "./icons/" + data.currently.icon + ".png")
-                $("#temperature").text(Math.round(data.currently.temperature * 10) / 10)
-                $("#condition").text(data.currently.summary)
-                $("#humidity").text((Math.round(data.currently.humidity * 100)) + "%")
-                $("#rainchance").text((Math.round((data.currently.precipProbability * 100) / 5) * 5) + "%")
-                $("#checked").text(moment().format("h:mm a"))
+    $.ajax({
+        url: url,
+        dataType: "jsonp",
+        success: function(data) {
+            console.log("OK: Weather")
 
-                // Forecast
+            // Current
+            $("#icon").attr("src", "./icons/" + data.currently.icon + ".png")
+            $("#temperature").text(Math.round(data.currently.temperature * 10) / 10)
+            $("#condition").text(data.currently.summary)
+            $("#humidity").text((Math.round(data.currently.humidity * 100)) + "%")
+            $("#rainchance").text((Math.round((data.currently.precipProbability * 100) / 5) * 5) + "%")
+            $("#checked").text(moment().format("h:mm a"))
 
-                let all = $("<div></div>")
+            // Forecast
+            let all = $("<div></div>")
 
-                data.daily.data.forEach(function(v) {
-                    console.log(v)
+            data.daily.data.forEach(function(v) {
+                console.log(v)
 
-                    let container = $("<div class='item'></div>")
-                    let day = $("<p></p>").text(moment.unix(v.time).format("ddd"))
-                    let icon = $("<img height='48px' />").attr("src", "./icons/" + v.icon + ".png")
-                    let max = $("<p id='max'></p>").text(Math.round(v.temperatureMax))
-                    let min = $("<p id='min'></p>").text(Math.round(v.temperatureMin))
+                let container = $("<div class='item'></div>")
+                let day = $("<p></p>").text(moment.unix(v.time).format("ddd"))
+                let icon = $("<img title='" + v.summary + "' height='48px' />").attr("src", "./icons/" + v.icon + ".png")
+                let max = $("<p id='max'></p>").text(Math.round(v.temperatureMax))
+                let min = $("<p id='min'></p>").text(Math.round(v.temperatureMin))
 
-                    container.append(day)
-                    container.append(icon)
-                    container.append(max)
-                    container.append(min)
-                    all.append(container)
-                })
+                container.append(day)
+                container.append(icon)
+                container.append(max)
+                container.append(min)
+                all.append(container)
+            })
 
-                $("#forecast").html(all)
-            },
-            error: function(data) {
-                console.error("ERR: Weather")
-                console.error(data)
-            }
-        })
-    }
-
-    setInterval(weather, 300000)
-    weather()
-})
+            $("#forecast").html(all)
+        },
+        error: function(data) {
+            console.error("ERR: Weather")
+            console.error(data)
+        }
+    })
+}
 
 // Shake
 let socket = io("http://shake.kurisubrooks.com:3390")
@@ -109,8 +87,10 @@ socket.on("disconnect", function() {
 })
 
 socket.on("auth", function(data) {
-    if (data.ok) console.log("OK: Shake")
-    else console.log("ERR: Shake - bad auth")
+    if (data.ok)
+        console.log("OK: Shake")
+    else
+        console.log("ERR: Shake - bad auth")
 })
 
 let eew = function(data, type) {
@@ -127,39 +107,79 @@ let eew = function(data, type) {
     }
 
     if (config.playsound) {
-        if (data.alarm) {
+        if (data.alarm)
             sound_alarm.play()
-        } else if (type === 1) {
+        else if (type === 1)
             sound_alert.play()
-        }
+    }
+
+    let timeout = function(time, change) {
+        setTimeout(function() {
+            $(".sidebar").css("background", "#222")
+            $(".content").css("background", "#333")
+        }, time)
     }
 
     if (data.situation !== 0) {
-        if (type === 0) {
+        if (type === 0)
             timeout(0, true)
-        } else {
-            if (data.situation === 1) {
-                timeout(60000, true)
-            } else if (data.situation === 2) {
-                timeout(50, false)
-            }
-        }
+        else if (data.situation === 1)
+            timeout(60000, true)
+        else if (data.situation === 2)
+            timeout(50, false)
     }
 }
 
-let timeout = function(time, change) {
-    setTimeout(function() {
-        $(".sidebar").css("background", "#222")
-        $(".content").css("background", "#333")
-    }, time)
-}
+let start = function() {
+    if (config.overscan === true) $("body").css("padding", "6px 17px")
 
-$(function() {
+    if (!config.location) throw `Missing Location. Example: ${window.location.host}?location={lat},{long}`
+    if (!config.apikey) throw `Missing API KEY. Example: ${window.location.host}?apikey={key}`
+
+    // Shake
     socket.on("quake.eew", function(data) {
         eew(data, 1)
     })
 
+    // Previous Quake
     $.getJSON("http://shake.kurisubrooks.com:3390/api/quake.last", function(data) {
         eew(data, 0)
     })
+
+    // Clock
+    setInterval(clock, 100)
+    clock()
+
+    // Weather
+    setInterval(weather, 300000)
+    weather()
+}
+
+// Start
+$(function() {
+    //let cookies = Cookies.getJSON("config") || config
+
+    // Initialise
+    if (getUrlParameter("overscan") === "true")
+        config.overscan = true
+    if (getUrlParameter("key"))
+        config.apikey = getUrlParameter("key")
+    if (getUrlParameter("location"))
+        config.location = getUrlParameter("location")
+    if (getUrlParameter("sound") === "false")
+        config.playsound = false
+
+    Cookies.set("config", config)
+
+    start()
+
+    /*if (cookies) {
+        if ("overscan" in cookies, "apikey" in cookies, "location" in cookies, "playsound" in cookies) {
+            start()
+        } else {
+            $(".overlay").show()
+        }
+    } else {
+        $(".overlay").show()
+    }*/
 })
