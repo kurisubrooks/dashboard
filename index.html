@@ -11,60 +11,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
-    <script src="cookie.js"></script>
     <script src="script.js"></script>
 </head>
 <body>
-
-    <div class="overlay">
-        <div class="config">
-            <h2>Config</h2>
-            <p>
-                This information will be stored in your cookies, so you don't have to enter the information every time. If you do not want deliciously fresh made cookies, this service is not for you.
-            </p>
-
-            <br>
-
-            <form>
-                <b>Location</b>
-                <p>
-                    This can be anything that can resolve to a location.<br>
-                    City, Country, Zip Code, Address, whatever.
-                </p>
-                <input type="text">
-
-                <br><br>
-
-                <b>Forecast.io Key</b>
-                <p>
-                    This is a private API key for the Forecast.io weather service.<br>
-                    Get your key for free, <a href="https://developer.forecast.io/" target="_blank">here</a>
-                </p>
-                <input type="text">
-
-                <br><br>
-
-                <b>Overscan</b>
-                <label>
-                    <input type="radio">
-                    Enable
-                </label>
-
-                <br><br><br>
-
-                <b>Mute Sound</b>
-                <label>
-                    <input type="radio">
-                    Enable
-                </label>
-
-                <br><br><br>
-                <input type="button" value="Save">
-            </form>
-
-            <label>
-        </div>
-    </div>
 
     <div class="container">
         <div class="sidebar">
@@ -93,8 +42,8 @@
 
                 <ol>
                     <li id="condition">...</li>
-                    <li><sup>Humidity</sup>&nbsp;&nbsp;<span id="humidity">...%</span></li>
-                    <li><sup>Chance of Rain</sup>&nbsp;&nbsp;<span id="rainchance">...%</span></li>
+                    <li><sup>Humidity</sup>&nbsp;&nbsp;<span id="humidity">...</span></li>
+                    <li><sup>UV</sup>&nbsp;&nbsp;<span id="uv">...</span></li>
 
                     <span id="lastchecked">
                         <i class="material-icons">cached</i> <span id="checked">...</span>

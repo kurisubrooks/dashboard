@@ -26,41 +26,47 @@ let clock = function() {
 
 // Weather
 let weather = function() {
-    let url = "https://api.forecast.io/forecast/" + config.apikey + "/" + config.location + "?units=si"
+    let url = "http://kurisu.pw/api/weather"
 
     console.log("GET: Weather - " + moment().format("DD/MM/YY h:mm:ss a"))
 
     $.ajax({
         url: url,
-        dataType: "jsonp",
+        dataType: "json",
         success: function(data) {
             console.log("OK: Weather")
 
             // Current
-            $("#icon").attr("src", "./icons/" + data.currently.icon + ".png")
-            $("#temperature").text(Math.round(data.currently.temperature * 10) / 10)
-            $("#condition").text(data.currently.summary)
-            $("#humidity").text((Math.round(data.currently.humidity * 100)) + "%")
-            $("#rainchance").text((Math.round((data.currently.precipProbability * 100) / 5) * 5) + "%")
+            $("#icon").attr("src", data.weather.image)
+            $("#temperature").text(data.weather.temperature)
+            $("#condition").text(data.weather.condition)
+            $("#humidity").text(data.weather.humidity)
+            $("#uv").text(data.weather.UV)
             $("#checked").text(moment().format("h:mm a"))
 
             // Forecast
             let all = $("<div></div>")
+            let count = 0
 
-            data.daily.data.forEach(function(v) {
+            data.forecast.forEach(function(v) {
                 console.log(v)
+                console.log(count)
+
+                if (count >= 8) return
 
                 let container = $("<div class='item'></div>")
-                let day = $("<p></p>").text(moment.unix(v.time).format("ddd"))
-                let icon = $("<img title='" + v.summary + "' height='48px' />").attr("src", "./icons/" + v.icon + ".png")
-                let max = $("<p id='max'></p>").text(Math.round(v.temperatureMax))
-                let min = $("<p id='min'></p>").text(Math.round(v.temperatureMin))
+                let day = $("<p></p>").text(moment.unix(v.date.time).format("ddd"))
+                let icon = $("<img title='" + v.condition + "' height='48px' />").attr("src", v.image)
+                let max = $("<p id='max'></p>").text(v.high)
+                let min = $("<p id='min'></p>").text(v.low)
 
                 container.append(day)
                 container.append(icon)
                 container.append(max)
                 container.append(min)
                 all.append(container)
+
+                ++count
             })
 
             $("#forecast").html(all)
@@ -133,9 +139,6 @@ let eew = function(data, type) {
 let start = function() {
     if (config.overscan === true) $("body").css("padding", "6px 17px")
 
-    if (!config.location) throw `Missing Location. Example: ${window.location.host}?location={lat},{long}`
-    if (!config.apikey) throw `Missing API KEY. Example: ${window.location.host}?apikey={key}`
-
     // Shake
     socket.on("quake.eew", function(data) {
         eew(data, 1)
@@ -151,35 +154,17 @@ let start = function() {
     clock()
 
     // Weather
-    setInterval(weather, 300000)
+    setInterval(weather, 2 * 60 * 1000)
     weather()
 }
 
 // Start
 $(function() {
-    //let cookies = Cookies.getJSON("config") || config
-
     // Initialise
     if (getUrlParameter("overscan") === "true")
         config.overscan = true
-    if (getUrlParameter("key"))
-        config.apikey = getUrlParameter("key")
-    if (getUrlParameter("location"))
-        config.location = getUrlParameter("location")
     if (getUrlParameter("sound") === "false")
         config.playsound = false
 
-    Cookies.set("config", config)
-
     start()
-
-    /*if (cookies) {
-        if ("overscan" in cookies, "apikey" in cookies, "location" in cookies, "playsound" in cookies) {
-            start()
-        } else {
-            $(".overlay").show()
-        }
-    } else {
-        $(".overlay").show()
-    }*/
 })
