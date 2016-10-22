@@ -120,11 +120,13 @@ let fire = function() {
             console.log("OK: Fire")
 
             if (data.search >= 1) {
+                $("#fire").show()
                 $("#fire #indicator").css("color", colors[data.fires[0].data.level])
                 $("#fire #location").text(data.fires[0].title)
                 $("#fire #status").text(data.fires[0].data.status)
                 $("#fire #level").text(data.fires[0].category)
             } else {
+                $("#fire").hide()
                 $("#fire #indicator").css("color", "#FFFFFF")
                 $("#fire #location").text("Penrith, NSW")
                 $("#fire #status").text("")
