@@ -27,6 +27,12 @@ h1 {
     font-size: 80px;
 }
 
+ul, ol, li {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
 .spacer {
     height: 100%;
 }
@@ -75,4 +81,24 @@ h1 {
 .box .content {
     flex: 1;
     padding: 30px 50px;
+}
+
+.forecast {
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.forecast ol {
+
+}
+
+.forecast li {
+    display: inline-block;
+    text-align: center;
+    padding: 0 5px;
+    margin-right: 25px;
+}
+
+.forecast li .value {
+    margin: 0;
 }

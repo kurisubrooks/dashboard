@@ -21,36 +21,61 @@ let clock = function() {
 let weather = function() {
     console.log("GET: Weather")
 
+    let UV = function(index) {
+        if (index === 0)
+            return "None"
+        else if (index === 1 || index === 2)
+            return "Low"
+        else if (index >= 3 && index <= 5)
+            return "Moderate"
+        else if (index === 6 && index === 7)
+            return "High"
+        else if (index >= 8 && index <= 10)
+            return "Very High"
+        else if (index >= 11)
+            return "Extreme"
+        else
+            return "Unknown"
+    }
+
     $.ajax({
         url: "http://kurisu.pw/api/weather",
         dataType: "json",
         success: function(data) {
             console.log("OK: Weather")
 
-            let UV
-
-            if (data.weather.UV === 0)
-                UV = "None"
-            else if (data.weather.UV === 1 || data.weather.UV === 2)
-                UV = "Low"
-            else if (data.weather.UV >= 3 && data.weather.UV <= 5)
-                UV = "Moderate"
-            else if (data.weather.UV === 6 && data.weather.UV === 7)
-                UV = "High"
-            else if (data.weather.UV >= 8 && data.weather.UV <= 10)
-                UV = "Very High"
-            else if (data.weather.UV >= 11)
-                UV = "Extreme"
-            else
-                UV = "Unknown"
-
             $("#weather #high").text(data.forecast[0].high + "°")
             $("#weather #low").text(data.forecast[0].low + "°")
             $("#weather #icon").attr("src", data.weather.image)
             $("#weather #condition").text(data.weather.condition)
             $("#weather #humidity").text(data.weather.humidity)
-            $("#weather #UV").text(UV)
+            $("#weather #UV").text(UV(data.weather.UV))
             $("#weather #temperature").text(data.weather.temperature + "°")
+
+            let all = $("#weather #forecast")
+            let count = 0
+
+            data.forecast.forEach(function(v) {
+                if (count >= 8) return
+
+                let container = $("<li></li>")
+                let day = $("<div id='day'></div>").text(v.date.display.day_short)
+                let icon = $("<div id='icon'>")
+                    let image = $("<img height='48px' />").attr("title", v.condition).attr("src", v.image)
+                let temp = $("<div id='temp'></div>")
+                    let min = $("<span class='label' id='min'></span>").text(v.low + "°")
+                    let max = $("<span class='value' id='max'></span>").text(v.high + "°")
+
+                container.append(day)
+                icon.append(image)
+                container.append(icon)
+                temp.append(min)
+                temp.append(max)
+                container.append(temp)
+                all.append(container)
+
+                ++count
+            })
         },
         error: function(data) {
             console.error("ERR: Weather")
