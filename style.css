@@ -70,6 +70,11 @@ ul, ol, li {
     display: flex;
 }
 
+.box:first-child .sidebar,
+.box:first-child .content {
+    padding-top: 50px;
+}
+
 .box .sidebar {
     display: flex;
     align-items: center;
@@ -103,6 +108,10 @@ ul, ol, li {
     text-align: center;
     padding: 0 5px;
     margin-right: 25px;
+}
+
+.forecast li div {
+    padding: 2px 0;
 }
 
 .forecast li .value {
