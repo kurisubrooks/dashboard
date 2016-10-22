@@ -44,15 +44,13 @@ let weather = function() {
         success: function(data) {
             console.log("OK: Weather")
 
-            $("#weather #high").text(data.forecast[0].high + "°")
-            $("#weather #low").text(data.forecast[0].low + "°")
             $("#weather #icon").attr("src", data.weather.image)
             $("#weather #condition").text(data.weather.condition)
             $("#weather #humidity").text(data.weather.humidity)
             $("#weather #UV").text(UV(data.weather.UV))
             $("#weather #temperature").text(data.weather.temperature + "°")
 
-            let all = $("#weather #forecast")
+            let all = $("<ol></ol>")
             let count = 0
 
             data.forecast.forEach(function(v) {
@@ -75,6 +73,8 @@ let weather = function() {
                 all.append(container)
 
                 ++count
+
+                $("#weather #forecast").html(all)
             })
         },
         error: function(data) {
