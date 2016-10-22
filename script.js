@@ -84,6 +84,25 @@ let weather = function() {
     })
 }
 
+let aqi = function() {
+    console.log("GET: AQI")
+
+    $.ajax({
+        url: "http://kurisu.pw/api/aqi",
+        dataType: "json",
+        success: function(data) {
+            console.log("OK: AQI")
+
+            //$("#weather #aqi").css("color", data.aqi.color)
+            $("#weather #aqi").text(data.aqi.level)
+        },
+        error: function(data) {
+            console.error("ERR: AQI")
+            console.error(data)
+        }
+    })
+}
+
 let fire = function() {
     console.log("GET: Fire")
 
@@ -193,9 +212,11 @@ $(function() {
     setInterval(clock, 200)
     setInterval(weather, 2 * 60 * 1000)
     setInterval(fire, 2 * 60 * 1000)
+    setInterval(aqi, 2 * 60 * 1000)
 
     clock()
     weather()
     fire()
+    aqi()
     shake()
 })
