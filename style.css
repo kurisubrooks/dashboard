@@ -1,194 +1,78 @@
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
+::-webkit-scrollbar { 
+    display: none; 
 }
 
-html, body {
+html {
+    height: 100%;
+    background: #333333;
+}
+
+body {
     margin: 0;
     height: 100%;
     color: #FFF;
-    background: #222;
-    font-family: "Roboto Condensed", sans-serif;
-    font-size: 14px;
+    font-family: "Rubik", "Noto Sans CJK JP", "Noto Sans JP", "游ゴシック", "YuGothic", "ヒラギノ角ゴ Pro W3", sans-serif;
+    font-size: 16px;
     -webkit-font-smoothing: antialiased;
 }
 
-p {
-    font-family: "Roboto Condensed", sans-serif;
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Rubik", sans-serif;
+    font-weight: 400;
     margin: 0;
-    padding: 0;
 }
 
-ol {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    font-size: 32px;
+h1 {
+    font-family: "Roboto Condensed";
+    font-size: 80px;
 }
 
-li {
-    display: inline-block;
-    margin: 0;
-    padding: 0;
-    list-style: none;
+.spacer {
+    height: 100%;
 }
 
-li:not(:last-of-type)::after {
-    color: rgba(255, 255, 255, 0.5);
-    content: "\00a0　/　"
+.label {
+    color: rgba(255, 255, 255, 0.6);
+    margin-right: 5px;
 }
 
-sub,
-sup {
-    vertical-align: inherit;
-    color: rgba(255, 255, 255, 0.5);
+.value {
+    color: #FFF;
+    margin-right: 20px;
+}
+
+.value:not(:last-child)::after {
+    padding-left: 25px;
+    color: rgba(255, 255, 255, 0.6);
+    content: "/";
 }
 
 .material-icons {
     vertical-align: text-top;
-    font-size: 19px;
+    font-size: inherit;
 }
 
 .container {
+    height: 100%;
+}
+
+.box {
     display: flex;
-    height: 100%;
 }
 
-.sidebar {
-    height: 100%;
-    width: 300px;
-    background: #222;
-    padding: 20px;
+.box .sidebar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 250px;
+    font-size: 80px;
+    padding: 30px 20px;
+    background: #2A2A2A;
     text-align: center;
+}
+
+.box .content {
     flex: 1;
-}
-
-.content {
-    height: 100%;
-    background: #333;
-    padding: 20px 20px 20px 80px;
-    flex: 5;
-}
-
-.sidebar div,
-.content div {
-    padding: 40px 0;
-}
-
-.content div:not(:last-child) {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.clock {
-    font-size: 80px;
-}
-
-.weather {
-    font-size: 94px;
-}
-
-.weather #wc {
-    padding-left: 3px;
-    vertical-align: top;
-    font-size: 48px;
-    color: #FFF;
-}
-
-.weather #lastchecked {
-    padding: 10px 0 0 20px;
-    display: inline-block;
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 16px;
-    border: none;
-}
-
-.weather .forecast {
-    display: inline-block;
-    padding: 0;
-    padding-top: 30px;
-    font-size: 18px;
-    text-align: center;
-    white-space: nowrap;
-    border: none;
-}
-
-.weather .forecast div,
-.weather .forecast .item {
-    display: inline-block;
-    margin: 0;
-    padding: 0;
-    border: none;
-}
-
-.weather .forecast .item {
-    margin-right: 50px;
-}
-
-.weather .forecast .item p {
-    padding: 2px 0;
-}
-
-.weather .forecast .item #min {
-    color: rgba(255, 255, 255, 0.5);
-}
-
-.shake {
-    font-size: 80px;
-}
-
-.overlay {
-    display: none;
-    font-family: "Roboto", sans-serif;
-    z-index: 10;
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.8);
-}
-
-.overlay p {
-    font-family: "Roboto", sans-serif;
-}
-
-.overlay b {
-    display: block;
-    font-size: 1.2em;
-    margin-bottom: 5px;
-}
-
-.overlay input[type=text] {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-
-    margin: 10px 0;
-    min-width: 200px;
-    padding: 5px 16px;
-    border: 1px solid #EEE;
-    border-radius: 2px;
-}
-
-.overlay input[type=button] {
-    font-size: 1.2em;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    border: none;
-    background: #5B5;
-    color: #FFF;
-    padding: 6px 18px;
-    border-radius: 2px;
-}
-
-.overlay .config {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    color: #222;
-    padding: 20px 50px;
-    border-radius: 2px;
-    box-shadow: 0px 2px 10px 0px rgba(0,0,0,0.75);
+    padding: 30px 50px;
 }

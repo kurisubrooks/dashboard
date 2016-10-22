@@ -1,75 +1,56 @@
-// Config
-let config = {
-    overscan: false,
-    apikey: null,
-    location: null,
-    playsound: true
-}
+let socket = io("http://shake.kurisubrooks.com:3390")
+let sound_alarm = new Audio("./audio/alarm.mp3")
+let sound_alert = new Audio("./audio/nhk.mp3")
 
-// Get URL Params
-let getUrlParameter = function getUrlParameter(sParam) {
-    let sPageURL = decodeURIComponent(window.location.search.substring(1)),
-        sURLVariables = sPageURL.split("&"), sParameterName
+let getUrlParams = function(sParam) {
+    let PageURL = decodeURIComponent(window.location.search.substring(1)),
+        URLVariables = PageURL.split("&"), ParamName
 
-    for (i = 0; i < sURLVariables.length; i++) {
-        sParameterName = sURLVariables[i].split("=")
+    for (i = 0; i < URLVariables.length; i++) {
+        ParamName = URLVariables[i].split("=")
 
-        if (sParameterName[0] === sParam)
-            return sParameterName[1] === undefined ? true : sParameterName[1]
+        if (ParamName[0] === sParam) return ParamName[1] === undefined ? true : ParamName[1]
     }
 }
 
-// Clock
 let clock = function() {
-    $("#time").text(moment().format("h:mm:ss a"))
+    $("#clock #date").text(moment().format("dddd, D MMMM"))
+    $("#clock #time").text(moment().format("h:mm:ss a"))
 }
 
-// Weather
 let weather = function() {
-    let url = "http://kurisu.pw/api/weather"
-
-    console.log("GET: Weather - " + moment().format("DD/MM/YY h:mm:ss a"))
+    console.log("GET: Weather")
 
     $.ajax({
-        url: url,
+        url: "http://kurisu.pw/api/weather",
         dataType: "json",
         success: function(data) {
             console.log("OK: Weather")
 
-            // Current
-            $("#icon").attr("src", data.weather.image)
-            $("#temperature").text(data.weather.temperature)
-            $("#condition").text(data.weather.condition)
-            $("#humidity").text(data.weather.humidity)
-            $("#uv").text(data.weather.UV)
-            $("#checked").text(moment().format("h:mm a"))
+            let UV
 
-            // Forecast
-            let all = $("<div></div>")
-            let count = 0
+            if (data.weather.UV === 0)
+                UV = "None"
+            else if (data.weather.UV === 1 || data.weather.UV === 2)
+                UV = "Low"
+            else if (data.weather.UV >= 3 && data.weather.UV <= 5)
+                UV = "Moderate"
+            else if (data.weather.UV === 6 && data.weather.UV === 7)
+                UV = "High"
+            else if (data.weather.UV >= 8 && data.weather.UV <= 10)
+                UV = "Very High"
+            else if (data.weather.UV >= 11)
+                UV = "Extreme"
+            else
+                UV = "Unknown"
 
-            data.forecast.forEach(function(v) {
-                console.log(v)
-                console.log(count)
-
-                if (count >= 8) return
-
-                let container = $("<div class='item'></div>")
-                let day = $("<p></p>").text(moment.unix(v.date.time).format("ddd"))
-                let icon = $("<img title='" + v.condition + "' height='48px' />").attr("src", v.image)
-                let max = $("<p id='max'></p>").text(v.high)
-                let min = $("<p id='min'></p>").text(v.low)
-
-                container.append(day)
-                container.append(icon)
-                container.append(max)
-                container.append(min)
-                all.append(container)
-
-                ++count
-            })
-
-            $("#forecast").html(all)
+            $("#weather #high").text(data.forecast[0].high + "°")
+            $("#weather #low").text(data.forecast[0].low + "°")
+            $("#weather #icon").attr("src", data.weather.image)
+            $("#weather #condition").text(data.weather.condition)
+            $("#weather #humidity").text(data.weather.humidity)
+            $("#weather #UV").text(UV)
+            $("#weather #temperature").text(data.weather.temperature + "°")
         },
         error: function(data) {
             console.error("ERR: Weather")
@@ -78,93 +59,118 @@ let weather = function() {
     })
 }
 
-// Shake
-let socket = io("http://shake.kurisubrooks.com:3390")
-let sound_alarm = new Audio("./audio/alarm.mp3")
-let sound_alert = new Audio("./audio/nhk.mp3")
-let sound_info = new Audio("./audio/info.mp3")
+let fire = function() {
+    console.log("GET: Fire")
+
+    let colors = {
+        0: "#FFFFFF",
+        1: "#58ACFA",
+        2: "#F7D358",
+        3: "#FA5858"
+    }
+
+    $.ajax({
+        url: "http://kurisu.pw/api/fire",
+        dataType: "json",
+        success: function(data) {
+            console.log("OK: Fire")
+
+            if (data.search >= 1) {
+                $("#fire #indicator").css("color", colors[data.fires[0].data.level])
+                $("#fire #location").text(data.fires[0].title)
+                $("#fire #status").text(data.fires[0].data.status)
+                $("#fire #level").text(data.fires[0].category)
+            } else {
+                $("#fire #indicator").css("color", "#FFFFFF")
+                $("#fire #location").text("Penrith, NSW")
+                $("#fire #status").text("")
+                $("#fire #level").text("No Fires")
+            }
+        },
+        error: function(data) {
+            console.error("ERR: Fire")
+            console.error(data)
+        }
+    })
+}
+
+let shake = function () {
+    console.log("GET: Shake")
+
+    $.ajax({
+        url: "http://shake.kurisubrooks.com:3390/api/quake.last",
+        dataType: "json",
+        success: function(data) {
+            console.log("OK: Shake")
+
+            $("#shake #seismic").text(data.details.seismic.en)
+            $("#shake #magnitude").text(data.details.magnitude)
+            $("#shake #depth").text(data.details.geography.depth + "km")
+            $("#shake #epicenter").text(data.details.epicenter.en)
+        },
+        error: function(data) {
+            console.error("ERR: Shake")
+            console.error(data)
+        }
+    })
+}
+let eew = function(data) {
+    data = typeof data !== "object" ? JSON.parse(data) : data
+
+    $("#shake #seismic").text(data.details.seismic.en)
+    $("#shake #magnitude").text(data.details.magnitude)
+    $("#shake #depth").text(data.details.geography.depth + "km")
+    $("#shake #epicenter").text(data.details.epicenter.en)
+
+    $(".sidebar").css("background", "#C62E2E")
+    $("html").css("background", "#DA3838")
+
+    if (data.alarm)
+        sound_alarm.play()
+    else
+        sound_alert.play()
+
+    let reset = function(time) {
+        setTimeout(function() {
+            $(".sidebar").css("background", "#2A2A2A")
+            $("html").css("background", "#333333")
+        }, time ? time : 50)
+    }
+
+    if (data.situation !== 0) {
+        if (data.situation === 1)
+            reset(60 * 1000)
+        else if (data.situation === 2)
+            reset()
+    }
+}
 
 socket.on("connect", function() {
     socket.emit("auth", { version: 2.1 })
 })
 
 socket.on("disconnect", function() {
-    console.error("DISCON: Shake")
+    console.error("DC: Socket")
 })
 
 socket.on("auth", function(data) {
     if (data.ok)
-        console.log("OK: Shake")
+        console.log("OK: Socket")
     else
-        console.log("ERR: Shake - bad auth")
+        console.log("ERR: Socket - bad auth")
 })
 
-let eew = function(data, type) {
-    data = (typeof data !== "object") ? JSON.parse(data) : data
+socket.on("quake.eew", function(data) {
+    eew(data)
+})
 
-    $("#epicenter").text(data.details.epicenter.en)
-    $("#seismic").text(data.details.seismic.en)
-    $("#magnitude").text(data.details.magnitude)
-    $("#depth").text(data.details.geography.depth)
-
-    if (type === 1) {
-        $(".sidebar").css("background", "#C42E2E")
-        $(".content").css("background", "#E44242")
-    }
-
-    if (config.playsound) {
-        if (data.alarm)
-            sound_alarm.play()
-        else if (type === 1)
-            sound_alert.play()
-    }
-
-    let timeout = function(time, change) {
-        setTimeout(function() {
-            $(".sidebar").css("background", "#222")
-            $(".content").css("background", "#333")
-        }, time)
-    }
-
-    if (data.situation !== 0) {
-        if (type === 0)
-            timeout(0, true)
-        else if (data.situation === 1)
-            timeout(60000, true)
-        else if (data.situation === 2)
-            timeout(50, false)
-    }
-}
-
-let start = function() {
-    if (config.overscan === true) $("body").css("padding", "6px 17px")
-
-    // Shake
-    socket.on("quake.eew", function(data) {
-        eew(data, 1)
-    })
-
-    // Previous Quake
-    $.getJSON("http://shake.kurisubrooks.com:3390/api/quake.last", function(data) {
-        eew(data, 0)
-    })
-
-    // Clock
-    setInterval(clock, 100)
-    clock()
-
-    // Weather
-    setInterval(weather, 2 * 60 * 1000)
-    weather()
-}
-
-// Start
 $(function() {
-    // Initialise
-    if (getUrlParameter("overscan") === "true")
-        config.overscan = true
-    if (getUrlParameter("sound") === "false")
-        config.playsound = false
+    setInterval(clock, 200)
+    setInterval(weather, 2 * 60 * 1000)
+    setInterval(fire, 2 * 60 * 1000)
 
-    start()
+    clock()
+    weather()
+    fire()
+    shake()
 })

@@ -5,62 +5,93 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dash</title>
 
-    <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed|Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Rubik|Roboto+Condensed|Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/earlyaccess/notosansjp.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="jquery.js"></script>
+    <script src="moment.js"></script>
     <script src="script.js"></script>
 </head>
 <body>
 
     <div class="container">
-        <div class="sidebar">
-            <div class="clock">
-                <img src="./icons/time.svg" height="80px" />
+        <div class="box" id="clock">
+            <div class="sidebar">
+                <i class="material-icons">access_time</i>
             </div>
 
-            <div class="weather" style="margin-bottom:190px;">
-                <img src="./icons/unknown.png" height="112px" id="icon" />
-            </div>
-
-            <div class="shake">
-                <img src="./icons/shake.png" height="100px" />
+            <div class="content">
+                <h2 id="date">...</h2>
+                <h1 id="time">...</h1>
             </div>
         </div>
 
-        <div class="content">
-            <div class="clock">
-                <p id="time">...</p>
+        <div class="box" id="weather">
+            <div class="sidebar">
+                <div>
+                    <h2 style="font-size:26px;margin-bottom: 5px;">
+                        <span class="label" id="low">...</span>
+                        <span class="value" id="high">...</span>
+                    </h2>
+
+                    <img src="http://kurisu.pw/static/weather/icons/unknown_dark.png" height="80px" id="icon">
+                </div>
             </div>
 
-            <div class="weather">
-                <p>
-                    <span id="temperature">...</span>°<sup id="wc">c</sup>
-                </p>
+            <div class="content">
+                <h2>
+                    <span class="value" id="condition">...</span>
 
-                <ol>
-                    <li id="condition">...</li>
-                    <li><sup>Humidity</sup>&nbsp;&nbsp;<span id="humidity">...</span></li>
-                    <li><sup>UV</sup>&nbsp;&nbsp;<span id="uv">...</span></li>
+                    <span class="label">Humidity</span>
+                    <span class="value" id="humidity">...</span>
 
-                    <span id="lastchecked">
-                        <i class="material-icons">cached</i> <span id="checked">...</span>
-                    </span>
-                </ol>
+                    <span class="label">UV</span>
+                    <span class="value" id="UV">...</span>
+                </h2>
 
-                <div class="forecast" id="forecast"></div>
+                <h1 id="temperature">...</h1>
+            </div>
+        </div>
+
+        <div class="box" id="fire">
+            <div class="sidebar">
+                <i class="material-icons" id="indicator">whatshot</i>
             </div>
 
-            <div class="shake">
-                <p id="epicenter">...</p>
-                <ol>
-                    <li><sup>Seismic</sup>&nbsp;&nbsp;<span id="seismic">...</span></li>
-                    <li><sup>Magnitude</sup>&nbsp;&nbsp;<span id="magnitude">...</span></li>
-                    <li><sup>Depth</sup>&nbsp;&nbsp;<span id="depth">...</span>km</li>
-                </ol>
+            <div class="content">
+                <h2>
+                    <span class="value" id="location">...</span>
+                    <span class="value" id="status">...</span>
+                </h2>
+                <h1 id="level">...</h1>
             </div>
+        </div>
+
+        <div class="box" id="shake">
+            <div class="sidebar">
+                <i class="material-icons">priority_high</i>
+            </div>
+
+            <div class="content">
+                <h2>
+                    <span class="label">Seismic</span>
+                    <span class="value" id="seismic">...</span>
+
+                    <span class="label">Magnitude</span>
+                    <span class="value" id="magnitude">...</span>
+
+                    <span class="label">Depth</span>
+                    <span class="value" id="depth">...</span>
+                </h2>
+
+                <h1 id="epicenter">...</h1>
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="sidebar" class="spacer">&nbsp;</div>
         </div>
     </div>
 
