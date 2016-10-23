@@ -1,6 +1,7 @@
 let socket = io("http://shake.kurisubrooks.com:3390")
 let sound_alarm = new Audio("./audio/alarm.mp3")
 let sound_alert = new Audio("./audio/nhk.mp3")
+let all = 4
 
 let getUrlParams = function(sParam) {
     let PageURL = decodeURIComponent(window.location.search.substring(1)),
@@ -14,7 +15,8 @@ let getUrlParams = function(sParam) {
 }
 
 let clock = function() {
-    $("#clock #date").text(moment().format("dddd, D MMMM"))
+    $("#clock #day").text(moment().format("dddd"))
+    $("#clock #date").text(moment().format("D MMMM YYYY"))
     $("#clock #time").text(moment().format("h:mm:ss a"))
 }
 
@@ -120,12 +122,21 @@ let fire = function() {
             console.log("OK: Fire")
 
             if (data.search >= 1) {
+                all = 4
+                $(".box .sidebar").css("padding", "30px 20px")
+                $(".box .content").css("padding", "30px 50px")
+
                 $("#fire").show()
                 $("#fire #indicator").css("color", colors[data.fires[0].data.level])
                 $("#fire #location").text(data.fires[0].title)
                 $("#fire #status").text(data.fires[0].data.status)
                 $("#fire #level").text(data.fires[0].category)
             } else {
+                all = 3
+                $(".box .sidebar").css("padding", "40px 20px")
+                $(".box .content").css("padding", "40px 50px")
+                $(".box#clock .sidebar, .box#clock .content").css("padding-top", "70px")
+
                 $("#fire").hide()
                 $("#fire #indicator").css("color", "#FFFFFF")
                 $("#fire #location").text("Penrith, NSW")

@@ -2,6 +2,12 @@
     display: none; 
 }
 
+*,
+*::before,
+*::after {
+    box-shadow: border-box;
+}
+
 html {
     height: 100%;
     background: #333333;
