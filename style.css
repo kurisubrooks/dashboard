@@ -1,5 +1,5 @@
-::-webkit-scrollbar { 
-    display: none; 
+::-webkit-scrollbar {
+    display: none;
 }
 
 *,
@@ -66,6 +66,26 @@ ul, ol, li {
 .material-icons {
     vertical-align: text-top;
     font-size: inherit;
+}
+
+.overlay {
+    display: none;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+#map .gmnoprint,
+#map .gmnoprint,
+#map .gm-style a[target=_blank] {
+    display: none !important;
 }
 
 .container {

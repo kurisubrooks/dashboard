@@ -2,16 +2,84 @@ let socket = io("http://shake.kurisubrooks.com:3390")
 let sound_alarm = new Audio("./audio/alarm.mp3")
 let sound_alert = new Audio("./audio/nhk.mp3")
 let all = 4
+let map
 
-let getUrlParams = function(sParam) {
+let getUrlParams = function(search) {
     let PageURL = decodeURIComponent(window.location.search.substring(1)),
         URLVariables = PageURL.split("&"), ParamName
 
     for (i = 0; i < URLVariables.length; i++) {
         ParamName = URLVariables[i].split("=")
 
-        if (ParamName[0] === sParam) return ParamName[1] === undefined ? true : ParamName[1]
+        if (ParamName[0] === search) return ParamName[1] === undefined ? true : ParamName[1]
     }
+}
+
+window.initMap = function(lat, long) {
+    let pos = {
+        lat: lat ? lat : 36.2,
+        lng: long ? long : 137.0
+    }
+
+    let style = [
+        {"featureType": "all", "elementType": "labels.text.fill", "stylers": [ { "saturation": 36 }, { "color": "#2a2a2a" }, { "lightness": 40 } ] }, 
+        { "featureType": "all", "elementType": "labels.text.stroke", "stylers": [ { "visibility": "on" }, { "color": "#000000" }, { "lightness": 16 } ] }, 
+        { "featureType": "all", "elementType": "labels.icon", "stylers": [ { "visibility": "on" } ] }, 
+        { "featureType": "administrative", "elementType": "geometry.fill", "stylers": [ { "color": "#000000" }, { "lightness": 20 } ] }, 
+        { "featureType": "administrative", "elementType": "geometry.stroke", "stylers": [ { "visibility": "off" }, { "color": "#2a2a2a" }, { "lightness": 17 }, { "weight": 1.2 } ] }, 
+        { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#000000" }, { "lightness": 20 } ] }, 
+        { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#000000" }, { "lightness": 21 } ] }, 
+        { "featureType": "road.highway", "elementType": "geometry.fill", "stylers": [ { "color": "#000000" }, { "lightness": 17 } ] }, 
+        { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [ { "color": "#000000" }, { "lightness": 29 }, { "weight": 0.2 } ] }, 
+        { "featureType": "road.arterial", "elementType": "geometry", "stylers": [ { "color": "#999999" }, { "lightness": 18 } ] }, 
+        { "featureType": "road.local", "elementType": "geometry", "stylers": [ { "color": "#999999" }, { "lightness": 16 } ] }, 
+        { "featureType": "transit", "elementType": "geometry", "stylers": [ { "color": "#000000" }, { "lightness": 19 } ] }, 
+        { "featureType": "water", "elementType": "geometry", "stylers": [ { "color": "#000000" }, { "lightness": 15 } ] }
+    ]
+
+    map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 6,
+        center: pos,
+        styles: style
+    })
+
+    let drawCircle = function(radius) {
+        return new google.maps.Circle({
+            map: map,
+            center: pos,
+            fillColor: "#FF0000",
+            fillOpacity: 0.15 / radius + 0.05,
+            strokeColor: "#FF0000",
+            strokeOpacity: 0.5 / radius + 0.05,
+            radius: 50000 * radius
+        })
+    }
+
+    let marker = new google.maps.Marker({
+        map: map,
+        position: pos,
+        icon: {
+            url: "https://i.imgur.com/jFs4ZRf.png",
+            size: new google.maps.Size(28, 28),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(14, 14)
+        }
+    })
+
+    let circle1 = drawCircle(1.0)
+    let circle2 = drawCircle(1.5)
+    let circle3 = drawCircle(2.0)
+    let circle4 = drawCircle(2.5)
+    let circle5 = drawCircle(3.0)
+
+    marker.setPosition(pos)
+    circle1.setCenter(pos)
+    circle2.setCenter(pos)
+    circle3.setCenter(pos)
+    circle4.setCenter(pos)
+    circle5.setCenter(pos)
+    map.panTo(pos)
+    map.setCenter(pos)
 }
 
 let clock = function() {
@@ -130,6 +198,7 @@ let fire = function() {
                 $("#fire #indicator").css("color", colors[data.fires[0].data.level])
                 $("#fire #location").text(data.fires[0].title)
                 $("#fire #status").text(data.fires[0].data.status)
+                $("#fire #type").text(data.fires[0].data.type)
                 $("#fire #level").text(data.fires[0].category)
             } else {
                 all = 3
@@ -139,8 +208,9 @@ let fire = function() {
 
                 $("#fire").hide()
                 $("#fire #indicator").css("color", "#FFFFFF")
-                $("#fire #location").text("Penrith, NSW")
-                $("#fire #status").text("")
+                $("#fire #location").text("Nil")
+                $("#fire #status").text("Nil")
+                $("#fire #type").text("Nil")
                 $("#fire #level").text("No Fires")
             }
         },
@@ -171,6 +241,7 @@ let shake = function () {
         }
     })
 }
+
 let eew = function(data) {
     data = typeof data !== "object" ? JSON.parse(data) : data
 
@@ -179,6 +250,7 @@ let eew = function(data) {
     $("#shake #depth").text(data.details.geography.depth + "km")
     $("#shake #epicenter").text(data.details.epicenter.en)
 
+    $(".overlay").show()
     $(".sidebar").css("background", "#C62E2E")
     $("html").css("background", "#DA3838")
 
@@ -191,6 +263,7 @@ let eew = function(data) {
         setTimeout(function() {
             $(".sidebar").css("background", "#2A2A2A")
             $("html").css("background", "#333333")
+            $(".overlay").fadeOut("fast")
         }, time ? time : 50)
     }
 
@@ -200,6 +273,8 @@ let eew = function(data) {
         else if (data.situation === 2)
             reset()
     }
+
+    initMap(data.details.geography.lat, data.details.geography.long)
 }
 
 socket.on("connect", function() {
@@ -232,4 +307,8 @@ $(function() {
     fire()
     aqi()
     shake()
+
+    /*setTimeout(function() {
+        eew({"id":20161024052601,"drill":false,"alarm":false,"situation":1,"revision":5,"details":{"announced":"2016/10/24 05:27:05","occurred":"2016/10/24 05:25:26","magnitude":6.1,"epicenter":{"id":188,"en":"Offshore Eastern Hokkaido","ja":"北海道東方沖"},"seismic":{"en":"3","ja":"3"},"geography":{"lat":43.8,"long":147.9,"depth":10,"offshore":true}}})
+    }, 4000)*/
 })
