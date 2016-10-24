@@ -117,7 +117,7 @@ let weather = function() {
             $("#weather #icon").attr("src", data.weather.image)
             $("#weather #condition").text(data.weather.condition)
             $("#weather #humidity").text(data.weather.humidity)
-            $("#weather #UV").text(UV(data.weather.UV))
+            $("#weather #UV").text(data.weather.UV + ", " + UV(data.weather.UV))
             $("#weather #temperature").text(data.weather.temperature + "°")
 
             let all = $("<ol></ol>")
@@ -164,7 +164,7 @@ let aqi = function() {
             console.log("OK: AQI")
 
             //$("#weather #aqi").css("color", data.aqi.color)
-            $("#weather #aqi").text(data.aqi.level)
+            $("#weather #aqi").text(data.aqi.value + ", " + data.aqi.level)
         },
         error: function(data) {
             console.error("ERR: AQI")
