@@ -98,7 +98,7 @@ let weather = function() {
             return "Low"
         else if (index >= 3 && index <= 5)
             return "Moderate"
-        else if (index === 6 && index === 7)
+        else if (index === 6 || index === 7)
             return "High"
         else if (index >= 8 && index <= 10)
             return "Very High"
