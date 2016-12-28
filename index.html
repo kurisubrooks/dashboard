@@ -2,24 +2,33 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dash</title>
+    <title>Dashboard</title>
 
-    <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed|Material+Icons" rel="stylesheet">
+    <link href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed|Roboto+Mono|Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/earlyaccess/notosansjp.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
 
+    <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.gridlayer.googlemutant@latest/Leaflet.GoogleMutant.js"></script>
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
     <script src="jquery.js"></script>
     <script src="moment.js"></script>
     <script src="script.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7pcKphts0KJqXvBjwdqH9-DCHqdCKTXA&callback=initMap"
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7pcKphts0KJqXvBjwdqH9-DCHqdCKTXA"
     async defer></script>
 
 </head>
 <body>
 
     <div class="overlay">
+        <div id="info">
+            <div id="corner"></div>
+            <div id="text">
+                <div id="epicenter">...</div>
+                <div id="details">Magnitude <span id="magnitude">...</span>, Seismic <span id="seismic">...</span>, Depth <span id="depth">...</span></div>
+            </div>
+        </div>
         <div id="map"></div>
     </div>
 
@@ -45,6 +54,7 @@
             <div class="sidebar" style="align-items: flex-start;">
                 <div>
                     <img src="http://kurisu.pw/static/weather/icons/unknown_dark.png" height="80px" id="icon">
+                    <h1 id="temperature">...</h1>
                 </div>
             </div>
 
@@ -62,31 +72,15 @@
                     <span class="value" id="aqi">...</span>
                 </h2>
 
-                <h1 id="temperature">...</h1>
-
                 <div class="forecast" id="forecast"></div>
             </div>
         </div>
 
         <!-- RFS / Fires -->
-        <div class="box" id="fire">
-            <div class="sidebar">
-                <i class="material-icons" id="indicator">whatshot</i>
-            </div>
-
-            <div class="content">
-                <h2>
-                    <span class="value" id="location">...</span>
-                    <span class="value" id="type">...</span>
-                    <span class="value" id="status">...</span>
-                </h2>
-
-                <h1 id="level">...</h1>
-            </div>
-        </div>
+        <div id="fires"></div>
 
         <!-- SHAKE / QUAKES -->
-        <div class="box" id="shake">
+        <!--<div class="box" id="shake">
             <div class="sidebar">
                 <i class="material-icons">notifications_none</i>
             </div>
@@ -105,7 +99,7 @@
 
                 <h1 id="epicenter">...</h1>
             </div>
-        </div>
+        </div>-->
 
         <div class="box">
             <div class="sidebar" class="spacer">
