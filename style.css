@@ -17,13 +17,13 @@ body {
     margin: 0;
     height: 100%;
     color: #FFF;
-    font-family: "Rubik", "Noto Sans CJK JP", "Noto Sans JP", "游ゴシック", "YuGothic", "ヒラギノ角ゴ Pro W3", sans-serif;
+    font-family: "Roboto", "Noto Sans CJK JP", "Noto Sans JP", "游ゴシック", "YuGothic", "ヒラギノ角ゴ Pro W3", sans-serif;
     font-size: 16px;
     -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: "Rubik", sans-serif;
+    font-family: "Roboto", sans-serif;
     font-weight: 400;
     margin: 0;
 }
@@ -126,20 +126,56 @@ ul, ol, li {
 }
 
 .forecast ol {
-
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
 }
 
 .forecast li {
-    display: inline-block;
-    text-align: center;
+    display: flex;
+    font-size: 1.1em;
+    width: 320px;
+    text-align: middle;
+    margin: 0 15px 20px 0;
+    /*text-align: center;
     padding: 0 5px;
-    margin-right: 25px;
+    margin-right: 25px;*/
 }
 
 .forecast li div {
+    display: inline-block;
     padding: 2px 0;
+    margin-right: 12px;
 }
 
 .forecast li .value {
     margin: 0;
+}
+
+.forecast li #temp {
+    width: 25px;
+}
+
+.forecast li #temp div {
+    display: block;
+}
+
+.forecast li #temp #min {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.forecast li #temp #max {
+    padding-top: 3px;
+}
+
+.forecast li #details {
+    padding-top: 3px;
+}
+
+.forecast li #details div {
+    display: block;
+}
+
+.forecast li #details #date {
+    color: rgba(255, 255, 255, 0.6);
 }

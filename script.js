@@ -22,18 +22,18 @@ window.initMap = function(lat, long) {
     }
 
     let style = [
-        {"featureType": "all", "elementType": "labels.text.fill", "stylers": [ { "saturation": 36 }, { "color": "#2a2a2a" }, { "lightness": 40 } ] }, 
-        { "featureType": "all", "elementType": "labels.text.stroke", "stylers": [ { "visibility": "on" }, { "color": "#000000" }, { "lightness": 16 } ] }, 
-        { "featureType": "all", "elementType": "labels.icon", "stylers": [ { "visibility": "on" } ] }, 
-        { "featureType": "administrative", "elementType": "geometry.fill", "stylers": [ { "color": "#000000" }, { "lightness": 20 } ] }, 
-        { "featureType": "administrative", "elementType": "geometry.stroke", "stylers": [ { "visibility": "off" }, { "color": "#2a2a2a" }, { "lightness": 17 }, { "weight": 1.2 } ] }, 
-        { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#000000" }, { "lightness": 20 } ] }, 
-        { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#000000" }, { "lightness": 21 } ] }, 
-        { "featureType": "road.highway", "elementType": "geometry.fill", "stylers": [ { "color": "#000000" }, { "lightness": 17 } ] }, 
-        { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [ { "color": "#000000" }, { "lightness": 29 }, { "weight": 0.2 } ] }, 
-        { "featureType": "road.arterial", "elementType": "geometry", "stylers": [ { "color": "#999999" }, { "lightness": 18 } ] }, 
-        { "featureType": "road.local", "elementType": "geometry", "stylers": [ { "color": "#999999" }, { "lightness": 16 } ] }, 
-        { "featureType": "transit", "elementType": "geometry", "stylers": [ { "color": "#000000" }, { "lightness": 19 } ] }, 
+        {"featureType": "all", "elementType": "labels.text.fill", "stylers": [ { "saturation": 36 }, { "color": "#2a2a2a" }, { "lightness": 40 } ] },
+        { "featureType": "all", "elementType": "labels.text.stroke", "stylers": [ { "visibility": "on" }, { "color": "#000000" }, { "lightness": 16 } ] },
+        { "featureType": "all", "elementType": "labels.icon", "stylers": [ { "visibility": "on" } ] },
+        { "featureType": "administrative", "elementType": "geometry.fill", "stylers": [ { "color": "#000000" }, { "lightness": 20 } ] },
+        { "featureType": "administrative", "elementType": "geometry.stroke", "stylers": [ { "visibility": "off" }, { "color": "#2a2a2a" }, { "lightness": 17 }, { "weight": 1.2 } ] },
+        { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#000000" }, { "lightness": 20 } ] },
+        { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#000000" }, { "lightness": 21 } ] },
+        { "featureType": "road.highway", "elementType": "geometry.fill", "stylers": [ { "color": "#000000" }, { "lightness": 17 } ] },
+        { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [ { "color": "#000000" }, { "lightness": 29 }, { "weight": 0.2 } ] },
+        { "featureType": "road.arterial", "elementType": "geometry", "stylers": [ { "color": "#999999" }, { "lightness": 18 } ] },
+        { "featureType": "road.local", "elementType": "geometry", "stylers": [ { "color": "#999999" }, { "lightness": 16 } ] },
+        { "featureType": "transit", "elementType": "geometry", "stylers": [ { "color": "#000000" }, { "lightness": 19 } ] },
         { "featureType": "water", "elementType": "geometry", "stylers": [ { "color": "#000000" }, { "lightness": 15 } ] }
     ]
 
@@ -82,8 +82,10 @@ window.initMap = function(lat, long) {
     map.setCenter(pos)
 }
 
+let jp_dotw = [ "日", "月", "火", "水", "木", "金", "土" ]
+
 let clock = function() {
-    $("#clock #day").text(moment().format("dddd"))
+    $("#clock #day").text(moment().format("dddd") + " (" + jp_dotw[Number(moment().format("d"))] + ")")
     $("#clock #date").text(moment().format("D MMMM YYYY"))
     $("#clock #time").text(moment().format("h:mm:ss a"))
 }
@@ -115,7 +117,7 @@ let weather = function() {
             console.log("OK: Weather")
 
             $("#weather #icon").attr("src", data.weather.image)
-            $("#weather #condition").text(data.weather.condition)
+            $("#weather #condition").text(data.weather.condition ? data.weather.condition : "Unknown")
             $("#weather #humidity").text(data.weather.humidity)
             $("#weather #UV").text(data.weather.UV + ", " + UV(data.weather.UV))
             $("#weather #temperature").text(data.weather.temperature + "°")
@@ -124,22 +126,29 @@ let weather = function() {
             let count = 0
 
             data.forecast.forEach(function(v) {
-                if (count >= 8) return
+                if (count >= 6) return
 
-                let container = $("<li></li>")
-                let day = $("<div id='day'></div>").text(v.date.display.day_short)
-                let icon = $("<div id='icon'>")
-                    let image = $("<img height='48px' />").attr("title", v.condition).attr("src", v.image)
-                let temp = $("<div id='temp'></div>")
-                    let min = $("<span class='label' id='min'></span>").text(v.low + "°")
-                    let max = $("<span class='value' id='max'></span>").text(v.high + "°")
+                let container = $(`<li></li>`)
+                    let temp = $(`<div id="temp"></div>`)
+                        let max = $(`<div id="max"></div>`).text(v.high + "°")
+                        let min = $(`<div id="min"></div>`).text(v.low + "°")
+                    let icon = $(`<div id="icon">`)
+                        let image = $(`<img height="50px" />`).attr("title", v.condition).attr("src", v.image)
+                    let details = $(`<div id="details"></div>`)
+                        let date = $(`<div id="date"></div>`).text(`${moment.unix(v.date.time).format("ddd, Do MMM")}`)
+                        let condition = $(`<div id="condition"></div>`).text(`${v.condition}`)
 
-                container.append(day)
+                temp.append(max)
+                temp.append(min)
+                container.append(temp)
+
                 icon.append(image)
                 container.append(icon)
-                temp.append(min)
-                temp.append(max)
-                container.append(temp)
+
+                details.append(date)
+                details.append(condition)
+                container.append(details)
+
                 all.append(container)
 
                 ++count
@@ -189,7 +198,7 @@ let fire = function() {
         success: function(data) {
             console.log("OK: Fire")
 
-            if (data.search >= 1) {
+            if (data.search > 0) {
                 all = 4
                 $(".box .sidebar").css("padding", "30px 20px")
                 $(".box .content").css("padding", "30px 50px")
@@ -298,9 +307,11 @@ socket.on("quake.eew", function(data) {
 
 $(function() {
     setInterval(clock, 200)
-    setInterval(weather, 2 * 60 * 1000)
-    setInterval(fire, 2 * 60 * 1000)
-    setInterval(aqi, 2 * 60 * 1000)
+    setInterval(() => {
+        weather()
+        fire()
+        aqi()
+    }, 2 * 60 * 1000)
 
     clock()
     weather()
