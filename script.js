@@ -197,11 +197,10 @@ let shake = function () {
         success: function(data) {
             console.log("OK: Shake")
 
-            eew(data)
-            /*$("#shake #seismic").text(data.details.seismic.en)
-            $("#shake #magnitude").text(data.details.magnitude)
-            $("#shake #depth").text(data.details.geography.depth + "km")
-            $("#shake #epicenter").text(data.details.epicenter.en)*/
+            $("#text #seismic").text(data.details.seismic.en)
+            $("#text #magnitude").text(data.details.magnitude)
+            $("#text #depth").text(data.details.geography.depth + "km")
+            $("#text #epicenter").text(data.details.epicenter.en)
         },
         error: function(data) {
             console.error("ERR: Shake")
