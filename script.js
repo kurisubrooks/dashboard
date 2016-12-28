@@ -1,7 +1,6 @@
 let socket = io("http://shake.kurisubrooks.com:3390")
 let sound_alarm = new Audio("./audio/alarm.mp3")
 let sound_alert = new Audio("./audio/nhk.mp3")
-let all = 4
 let map
 let marker
 
@@ -18,8 +17,8 @@ let getUrlParams = function(search) {
 
 let epicenter_icon = L.icon({
     iconUrl: "https://i.imgur.com/jFs4ZRf.png",
-    iconSize:     [28, 28],
-    iconAnchor:   [14, 14]
+    iconSize: [28, 28],
+    iconAnchor: [14, 14]
 })
 
 let initMap = () => {
@@ -34,13 +33,14 @@ let initMap = () => {
 
 let jp_dotw = [ "日", "月", "火", "水", "木", "金", "土" ]
 
-let clock = function() {
-    $("#clock #day").text(moment().format("dddd") + " (" + jp_dotw[Number(moment().format("d"))] + ")")
+let clock = () => {
+    $("#clock #day").text(moment().format("dddd"))
+    $("#clock #jpd").text(jp_dotw[Number(moment().format("d"))])
     $("#clock #date").text(moment().format("D MMMM YYYY"))
     $("#clock #time").text(moment().format("h:mm:ss a"))
 }
 
-let weather = function() {
+let weather = () => {
     console.log("GET: Weather")
 
     let UV = function(index) {
@@ -70,7 +70,7 @@ let weather = function() {
             $("#weather #condition").text(data.weather.condition ? data.weather.condition : "Unknown")
             $("#weather #humidity").text(data.weather.humidity)
             $("#weather #UV").text(data.weather.UV + ", " + UV(data.weather.UV))
-            $("#weather #temperature").text(Math.round(data.weather.temperature) + "°")
+            $("#weather #temperature").text(Math.round(data.weather.temperature))
 
             let all = $("<ol></ol>")
             let count = 0
@@ -113,7 +113,7 @@ let weather = function() {
     })
 }
 
-let aqi = function() {
+let aqi = () => {
     console.log("GET: AQI")
 
     $.ajax({
@@ -132,7 +132,7 @@ let aqi = function() {
     })
 }
 
-let fire = function() {
+let fire = () => {
     console.log("GET: Fire")
 
     let colors = {
@@ -148,6 +148,10 @@ let fire = function() {
         success: function(data) {
             console.log("OK: Fire")
 
+            /*data = {"ok":true,"total":47,"search":2,"fires":[{"title":"East Wilchard Rd, Castlereagh","category":"Not Applicable","guid":"248430","published":"28/12/2016 5:42:00 AM","data":{"level":3,"location":"142 East Wilchard Rd, Castlereagh, NSW 2749","council":"Penrith","status":"Under control","type":"Vehicle/Equipment Fire","fire":true,"size":"0 ha","agency":"Rural Fire Service","updated":1482903720000}},{"title":"Wallgrove Rd, Horsley Park","category":"Not Applicable","guid":"248190","published":"28/12/2016 4:15:00 AM","data":{"level":0,"location":"785-811 Wallgrove Rd, Horsley Park, NSW 2175","council":"Fairfield","status":"Under control","type":"Other","fire":true,"size":"0 ha","agency":"Rural Fire Service","updated":1482898500000}},{"title":"Wallgrove Rd, Horsley Park","category":"Not Applicable","guid":"248190","published":"28/12/2016 4:15:00 AM","data":{"level":0,"location":"785-811 Wallgrove Rd, Horsley Park, NSW 2175","council":"Fairfield","status":"Under control","type":"Other","fire":true,"size":"0 ha","agency":"Rural Fire Service","updated":1482898500000}},{"title":"Wallgrove Rd, Horsley Park","category":"Not Applicable","guid":"248190","published":"28/12/2016 4:15:00 AM","data":{"level":0,"location":"785-811 Wallgrove Rd, Horsley Park, NSW 2175","council":"Fairfield","status":"Under control","type":"Other","fire":true,"size":"0 ha","agency":"Rural Fire Service","updated":1482898500000}},{"title":"Wallgrove Rd, Horsley Park","category":"Not Applicable","guid":"248190","published":"28/12/2016 4:15:00 AM","data":{"level":0,"location":"785-811 Wallgrove Rd, Horsley Park, NSW 2175","council":"Fairfield","status":"Under control","type":"Other","fire":true,"size":"0 ha","agency":"Rural Fire Service","updated":1482898500000}},{"title":"Wallgrove Rd, Horsley Park","category":"Not Applicable","guid":"248190","published":"28/12/2016 4:15:00 AM","data":{"level":0,"location":"785-811 Wallgrove Rd, Horsley Park, NSW 2175","council":"Fairfield","status":"Under control","type":"Other","fire":true,"size":"0 ha","agency":"Rural Fire Service","updated":1482898500000}},{"title":"Wallgrove Rd, Horsley Park","category":"Not Applicable","guid":"248190","published":"28/12/2016 4:15:00 AM","data":{"level":0,"location":"785-811 Wallgrove Rd, Horsley Park, NSW 2175","council":"Fairfield","status":"Under control","type":"Other","fire":true,"size":"0 ha","agency":"Rural Fire Service","updated":1482898500000}}]}*/
+
+            let count = 0
+            let mfcontainer = $(`<div class="container"></div>`)
             let container = $(`<div class="container"></div>`)
 
             data.fires.forEach((v) => {
@@ -166,6 +170,12 @@ let fire = function() {
                 type.text(v.data.type)
                 status.text(v.data.status)
 
+                if (count > 2) {
+                    console.info(true)
+                    //sidebar.width("100px")
+                    content.css("background", "inherit")
+                }
+
                 icon.append(fire)
                 sidebar.append(icon)
                 box.append(sidebar)
@@ -176,9 +186,15 @@ let fire = function() {
                 content.append(info)
                 box.append(content)
 
-                container.append(box)
+                if (v.data.level > 1) {
+                    mfcontainer.append(box)
+                } else {
+                    ++count
+                    container.append(box)
+                }
             })
 
+            $("#majorfires").html(mfcontainer)
             $("#fires").html(container)
         },
         error: function(data) {
@@ -227,7 +243,7 @@ let eew = function(data) {
         sound_alert.play()
 
     let reset = function(time) {
-        setTimeout(function() {
+        setTimeout(() => {
             $(".sidebar").css("background", "#2A2A2A")
             $("html").css("background", "#333333")
             $(".overlay").fadeOut("fast")
@@ -246,11 +262,11 @@ let eew = function(data) {
     map.invalidateSize()
 }
 
-socket.on("connect", function() {
+socket.on("connect", () => {
     socket.emit("auth", { version: 2.1 })
 })
 
-socket.on("disconnect", function() {
+socket.on("disconnect", () => {
     console.error("DC: Socket")
 })
 
@@ -280,11 +296,11 @@ $(function() {
     aqi()
     shake()
 
-    /*setTimeout(function() {
+    /*setTimeout(() => {
         eew({"id":20161228164030,"drill":false,"alarm":false,"situation":0,"revision":4,"details":{"announced":"2016/12/28 16:41:31","occurred":"2016/12/28 16:40:14","magnitude":3.8,"epicenter":{"id":0,"en":"Sanpachikamikita, Aomori Prefecture","ja":"三八上北地方青森県"},"seismic":{"en":"2","ja":"2"},"geography":{"lat":40.8,"long":141.2,"depth":10,"offshore":false}}})
     }, 4000)
 
-    setTimeout(function() {
+    setTimeout(() => {
         eew({"id":20161228164030,"drill":false,"alarm":false,"situation":1,"revision":4,"details":{"announced":"2016/12/28 16:41:31","occurred":"2016/12/28 16:40:14","magnitude":3.8,"epicenter":{"id":189,"en":"Offshore South Eastern Nemuro Peninsula","ja":"根室半島南東沖"},"seismic":{"en":"2","ja":"2"},"geography":{"lat":43,"long":146.6,"depth":10,"offshore":true}}})
     }, 6800)*/
 })
