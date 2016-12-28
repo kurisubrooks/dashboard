@@ -8,6 +8,12 @@
     box-shadow: border-box;
 }
 
+.leaflet-control-attribution,
+.gmnoprint,
+.gm-style-cc {
+    display: none;
+}
+
 html {
     height: 100%;
     background: #333333;
@@ -77,15 +83,43 @@ ul, ol, li {
     left: 0;
 }
 
-#map {
-    height: 100%;
-    width: 100%;
+.overlay #info {
+    display: flex;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    text-align: right;
 }
 
-#map .gmnoprint,
-#map .gmnoprint,
-#map .gm-style a[target=_blank] {
-    display: none !important;
+.overlay #info #corner {
+    display: inline-block;
+    height: inherit;
+    width: 36px;
+    border-top: 128px solid rgba(218, 56, 56, 0.75);
+    border-left: 50px solid transparent;
+}
+
+.overlay #info #text {
+    display: inline-block;
+    background: rgba(218, 56, 56, 0.75);
+    padding: 10px 25px;
+}
+
+.overlay #info #text #epicenter {
+    font-family: "Roboto Condensed";
+    font-size: 64px;
+}
+
+.overlay #info #text #details {
+    font-family: "Roboto Condensed";
+    font-size: 28px;
+}
+
+.overlay #map {
+    z-index: 5;
+    height: 100%;
+    width: 100%;
 }
 
 .container {
@@ -128,7 +162,6 @@ ul, ol, li {
 .forecast ol {
     display: flex;
     flex-wrap: wrap;
-    align-items: stretch;
 }
 
 .forecast li {
@@ -137,9 +170,6 @@ ul, ol, li {
     width: 320px;
     text-align: middle;
     margin: 0 15px 20px 0;
-    /*text-align: center;
-    padding: 0 5px;
-    margin-right: 25px;*/
 }
 
 .forecast li div {
@@ -178,4 +208,14 @@ ul, ol, li {
 
 .forecast li #details #date {
     color: rgba(255, 255, 255, 0.6);
+}
+
+#fires .sidebar {
+    display: block;
+}
+
+#fires .sidebar .icon {
+    display: block;
+    height: 60px;
+    font-size: 60px;
 }
