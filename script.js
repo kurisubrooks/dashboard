@@ -3,6 +3,7 @@ let sound_alarm = new Audio("./audio/alarm.mp3")
 let sound_alert = new Audio("./audio/nhk.mp3")
 let all = 4
 let map
+let marker
 
 let getUrlParams = function(search) {
     let PageURL = decodeURIComponent(window.location.search.substring(1)),
@@ -15,71 +16,20 @@ let getUrlParams = function(search) {
     }
 }
 
-window.initMap = function(lat, long) {
-    let pos = {
-        lat: lat ? lat : 36.2,
-        lng: long ? long : 137.0
-    }
+let epicenter_icon = L.icon({
+    iconUrl: "https://i.imgur.com/jFs4ZRf.png",
+    iconSize:     [28, 28],
+    iconAnchor:   [14, 14]
+})
 
-    let style = [
-        {"featureType": "all", "elementType": "labels.text.fill", "stylers": [ { "saturation": 36 }, { "color": "#2a2a2a" }, { "lightness": 40 } ] },
-        { "featureType": "all", "elementType": "labels.text.stroke", "stylers": [ { "visibility": "on" }, { "color": "#000000" }, { "lightness": 16 } ] },
-        { "featureType": "all", "elementType": "labels.icon", "stylers": [ { "visibility": "on" } ] },
-        { "featureType": "administrative", "elementType": "geometry.fill", "stylers": [ { "color": "#000000" }, { "lightness": 20 } ] },
-        { "featureType": "administrative", "elementType": "geometry.stroke", "stylers": [ { "visibility": "off" }, { "color": "#2a2a2a" }, { "lightness": 17 }, { "weight": 1.2 } ] },
-        { "featureType": "landscape", "elementType": "geometry", "stylers": [ { "color": "#000000" }, { "lightness": 20 } ] },
-        { "featureType": "poi", "elementType": "geometry", "stylers": [ { "color": "#000000" }, { "lightness": 21 } ] },
-        { "featureType": "road.highway", "elementType": "geometry.fill", "stylers": [ { "color": "#000000" }, { "lightness": 17 } ] },
-        { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [ { "color": "#000000" }, { "lightness": 29 }, { "weight": 0.2 } ] },
-        { "featureType": "road.arterial", "elementType": "geometry", "stylers": [ { "color": "#999999" }, { "lightness": 18 } ] },
-        { "featureType": "road.local", "elementType": "geometry", "stylers": [ { "color": "#999999" }, { "lightness": 16 } ] },
-        { "featureType": "transit", "elementType": "geometry", "stylers": [ { "color": "#000000" }, { "lightness": 19 } ] },
-        { "featureType": "water", "elementType": "geometry", "stylers": [ { "color": "#000000" }, { "lightness": 15 } ] }
-    ]
+let initMap = () => {
+    map = L.map("map").setView([32.5, 129.2], 6)
+    marker = L.marker([32.5, 129.2], { icon: epicenter_icon }).addTo(map)
 
-    map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 6,
-        center: pos,
-        styles: style
-    })
-
-    let drawCircle = function(radius) {
-        return new google.maps.Circle({
-            map: map,
-            center: pos,
-            fillColor: "#FF0000",
-            fillOpacity: 0.15 / radius + 0.05,
-            strokeColor: "#FF0000",
-            strokeOpacity: 0.5 / radius + 0.05,
-            radius: 50000 * radius
-        })
-    }
-
-    let marker = new google.maps.Marker({
-        map: map,
-        position: pos,
-        icon: {
-            url: "https://i.imgur.com/jFs4ZRf.png",
-            size: new google.maps.Size(28, 28),
-            origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(14, 14)
-        }
-    })
-
-    let circle1 = drawCircle(1.0)
-    let circle2 = drawCircle(1.5)
-    let circle3 = drawCircle(2.0)
-    let circle4 = drawCircle(2.5)
-    let circle5 = drawCircle(3.0)
-
-    marker.setPosition(pos)
-    circle1.setCenter(pos)
-    circle2.setCenter(pos)
-    circle3.setCenter(pos)
-    circle4.setCenter(pos)
-    circle5.setCenter(pos)
-    map.panTo(pos)
-    map.setCenter(pos)
+    let google = L.gridLayer.googleMutant({
+        type: "roadmap",
+        styles: [{"featureType":"all","elementType":"labels.text.fill","stylers":[{"saturation":36},{"color":"#2a2a2a"},{"lightness":40}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"color":"#000000"},{"lightness":16}]},{"featureType":"all","elementType":"labels.icon","stylers":[{"visibility":"on"}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"visibility":"off"},{"color":"#2a2a2a"},{"lightness":17},{"weight":1.2}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#999999"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#999999"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":15}]}]
+    }).addTo(map)
 }
 
 let jp_dotw = [ "日", "月", "火", "水", "木", "金", "土" ]
@@ -120,7 +70,7 @@ let weather = function() {
             $("#weather #condition").text(data.weather.condition ? data.weather.condition : "Unknown")
             $("#weather #humidity").text(data.weather.humidity)
             $("#weather #UV").text(data.weather.UV + ", " + UV(data.weather.UV))
-            $("#weather #temperature").text(data.weather.temperature + "°")
+            $("#weather #temperature").text(Math.round(data.weather.temperature) + "°")
 
             let all = $("<ol></ol>")
             let count = 0
@@ -198,30 +148,38 @@ let fire = function() {
         success: function(data) {
             console.log("OK: Fire")
 
-            if (data.search > 0) {
-                all = 4
-                $(".box .sidebar").css("padding", "30px 20px")
-                $(".box .content").css("padding", "30px 50px")
+            let container = $(`<div class="container"></div>`)
 
-                $("#fire").show()
-                $("#fire #indicator").css("color", colors[data.fires[0].data.level])
-                $("#fire #location").text(data.fires[0].title)
-                $("#fire #status").text(data.fires[0].data.status)
-                $("#fire #type").text(data.fires[0].data.type)
-                $("#fire #level").text(data.fires[0].category)
-            } else {
-                all = 3
-                $(".box .sidebar").css("padding", "40px 20px")
-                $(".box .content").css("padding", "40px 50px")
-                $(".box#clock .sidebar, .box#clock .content").css("padding-top", "70px")
+            data.fires.forEach((v) => {
+                let box = $(`<div class="box"></div>`)
+                    let sidebar = $(`<div class="sidebar"></div>`)
+                        let icon = $(`<div class="icon"></div>`)
+                            let fire = $(`<i class="material-icons">whatshot</i>`)
+                    let content = $(`<div class="content"></div>`)
+                        let place = $(`<h2 id="place"></h2>`)
+                        let info = $(`<div id="status"></div>`)
+                            let type = $(`<span class="value"></span>`)
+                            let status = $(`<span class="value"></span>`)
 
-                $("#fire").hide()
-                $("#fire #indicator").css("color", "#FFFFFF")
-                $("#fire #location").text("Nil")
-                $("#fire #status").text("Nil")
-                $("#fire #type").text("Nil")
-                $("#fire #level").text("No Fires")
-            }
+                fire.css("color", colors[v.data.level])
+                place.text(v.title)
+                type.text(v.data.type)
+                status.text(v.data.status)
+
+                icon.append(fire)
+                sidebar.append(icon)
+                box.append(sidebar)
+
+                info.append(type)
+                info.append(status)
+                content.append(place)
+                content.append(info)
+                box.append(content)
+
+                container.append(box)
+            })
+
+            $("#fires").html(container)
         },
         error: function(data) {
             console.error("ERR: Fire")
@@ -239,10 +197,11 @@ let shake = function () {
         success: function(data) {
             console.log("OK: Shake")
 
-            $("#shake #seismic").text(data.details.seismic.en)
+            eew(data)
+            /*$("#shake #seismic").text(data.details.seismic.en)
             $("#shake #magnitude").text(data.details.magnitude)
             $("#shake #depth").text(data.details.geography.depth + "km")
-            $("#shake #epicenter").text(data.details.epicenter.en)
+            $("#shake #epicenter").text(data.details.epicenter.en)*/
         },
         error: function(data) {
             console.error("ERR: Shake")
@@ -254,10 +213,10 @@ let shake = function () {
 let eew = function(data) {
     data = typeof data !== "object" ? JSON.parse(data) : data
 
-    $("#shake #seismic").text(data.details.seismic.en)
-    $("#shake #magnitude").text(data.details.magnitude)
-    $("#shake #depth").text(data.details.geography.depth + "km")
-    $("#shake #epicenter").text(data.details.epicenter.en)
+    $("#text #seismic").text(data.details.seismic.en)
+    $("#text #magnitude").text(data.details.magnitude)
+    $("#text #depth").text(data.details.geography.depth + "km")
+    $("#text #epicenter").text(data.details.epicenter.en)
 
     $(".overlay").show()
     $(".sidebar").css("background", "#C62E2E")
@@ -283,7 +242,9 @@ let eew = function(data) {
             reset()
     }
 
-    initMap(data.details.geography.lat, data.details.geography.long)
+    map.setView([data.details.geography.lat, data.details.geography.long], 6)
+    marker.setLatLng([data.details.geography.lat, data.details.geography.long]).update()
+    map.invalidateSize()
 }
 
 socket.on("connect", function() {
@@ -313,6 +274,7 @@ $(function() {
         aqi()
     }, 2 * 60 * 1000)
 
+    initMap()
     clock()
     weather()
     fire()
@@ -320,6 +282,10 @@ $(function() {
     shake()
 
     /*setTimeout(function() {
-        eew({"id":20161024052601,"drill":false,"alarm":false,"situation":1,"revision":5,"details":{"announced":"2016/10/24 05:27:05","occurred":"2016/10/24 05:25:26","magnitude":6.1,"epicenter":{"id":188,"en":"Offshore Eastern Hokkaido","ja":"北海道東方沖"},"seismic":{"en":"3","ja":"3"},"geography":{"lat":43.8,"long":147.9,"depth":10,"offshore":true}}})
-    }, 4000)*/
+        eew({"id":20161228164030,"drill":false,"alarm":false,"situation":0,"revision":4,"details":{"announced":"2016/12/28 16:41:31","occurred":"2016/12/28 16:40:14","magnitude":3.8,"epicenter":{"id":0,"en":"Sanpachikamikita, Aomori Prefecture","ja":"三八上北地方青森県"},"seismic":{"en":"2","ja":"2"},"geography":{"lat":40.8,"long":141.2,"depth":10,"offshore":false}}})
+    }, 4000)
+
+    setTimeout(function() {
+        eew({"id":20161228164030,"drill":false,"alarm":false,"situation":1,"revision":4,"details":{"announced":"2016/12/28 16:41:31","occurred":"2016/12/28 16:40:14","magnitude":3.8,"epicenter":{"id":189,"en":"Offshore South Eastern Nemuro Peninsula","ja":"根室半島南東沖"},"seismic":{"en":"2","ja":"2"},"geography":{"lat":43,"long":146.6,"depth":10,"offshore":true}}})
+    }, 6800)*/
 })
