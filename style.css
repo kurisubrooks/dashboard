@@ -95,9 +95,9 @@ ul, ol, li {
 .overlay #info #corner {
     display: inline-block;
     height: inherit;
-    width: 36px;
+    width: 30px;
     border-top: 128px solid rgba(218, 56, 56, 0.75);
-    border-left: 50px solid transparent;
+    border-left: 80px solid transparent;
 }
 
 .overlay #info #text {
