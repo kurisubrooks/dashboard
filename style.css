@@ -210,6 +210,30 @@ ul, ol, li {
     color: rgba(255, 255, 255, 0.6);
 }
 
+#fires,
+#majorfires {
+    margin-top: -20px;
+}
+
+#majorfires .sidebar .material-icons {
+    font-size: 78px;
+}
+
+#majorfires .content #place {
+    font-size: 52px;
+    margin-top: -12px;
+}
+
+#majorfires .content #status {
+    font-size: 24px;
+}
+
+#fires {
+    /*height: 380px;*/
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
 #fires .sidebar {
     display: block;
 }
