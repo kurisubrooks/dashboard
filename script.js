@@ -76,7 +76,20 @@ let weather = () => {
             let count = 0
 
             data.forecast.forEach(function(v) {
-                if (count >= 6) return
+                let viewport = $("body").width()
+
+                // < 720p
+                if (viewport >= 1060 && viewport < 1730) {
+                    if (count >= 6) return
+                // 900p - 1080p
+                } else if (viewport >= 1730 && viewport < 2065) {
+                    if (count >= 8) return
+                // 1440p - 4K
+                } else if (viewport >= 2065) {
+                    if (count >= 10) return
+                } else if (count >= 6) {
+                    return
+                }
 
                 let container = $(`<li></li>`)
                     let temp = $(`<div id="temp"></div>`)
