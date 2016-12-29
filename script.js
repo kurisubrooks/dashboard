@@ -34,10 +34,14 @@ let initMap = () => {
 let jp_dotw = [ "日", "月", "火", "水", "木", "金", "土" ]
 
 let clock = () => {
-    $("#clock #day").text(moment().format("dddd"))
-    $("#clock #jpd").text(jp_dotw[Number(moment().format("d"))])
-    $("#clock #date").text(moment().format("D MMMM YYYY"))
-    $("#clock #time").text(moment().format("h:mm:ss a"))
+    let time = moment().format("h:mm:ss a")
+
+    if ($("#clock #time").text() !== time) {
+        $("#clock #day").text(moment().format("dddd"))
+        $("#clock #jpd").text(jp_dotw[Number(moment().format("d"))])
+        $("#clock #date").text(moment().format("D MMMM YYYY"))
+        $("#clock #time").text(time)
+    }
 }
 
 let weather = () => {
