@@ -165,8 +165,6 @@ let fire = () => {
         success: function(data) {
             console.log("OK: Fire")
 
-            /*data = {"ok":true,"total":47,"search":2,"fires":[{"title":"East Wilchard Rd, Castlereagh","category":"Not Applicable","guid":"248430","published":"28/12/2016 5:42:00 AM","data":{"level":3,"location":"142 East Wilchard Rd, Castlereagh, NSW 2749","council":"Penrith","status":"Under control","type":"Vehicle/Equipment Fire","fire":true,"size":"0 ha","agency":"Rural Fire Service","updated":1482903720000}},{"title":"Wallgrove Rd, Horsley Park","category":"Not Applicable","guid":"248190","published":"28/12/2016 4:15:00 AM","data":{"level":0,"location":"785-811 Wallgrove Rd, Horsley Park, NSW 2175","council":"Fairfield","status":"Under control","type":"Other","fire":true,"size":"0 ha","agency":"Rural Fire Service","updated":1482898500000}},{"title":"Wallgrove Rd, Horsley Park","category":"Not Applicable","guid":"248190","published":"28/12/2016 4:15:00 AM","data":{"level":0,"location":"785-811 Wallgrove Rd, Horsley Park, NSW 2175","council":"Fairfield","status":"Under control","type":"Other","fire":true,"size":"0 ha","agency":"Rural Fire Service","updated":1482898500000}},{"title":"Wallgrove Rd, Horsley Park","category":"Not Applicable","guid":"248190","published":"28/12/2016 4:15:00 AM","data":{"level":0,"location":"785-811 Wallgrove Rd, Horsley Park, NSW 2175","council":"Fairfield","status":"Under control","type":"Other","fire":true,"size":"0 ha","agency":"Rural Fire Service","updated":1482898500000}},{"title":"Wallgrove Rd, Horsley Park","category":"Not Applicable","guid":"248190","published":"28/12/2016 4:15:00 AM","data":{"level":0,"location":"785-811 Wallgrove Rd, Horsley Park, NSW 2175","council":"Fairfield","status":"Under control","type":"Other","fire":true,"size":"0 ha","agency":"Rural Fire Service","updated":1482898500000}},{"title":"Wallgrove Rd, Horsley Park","category":"Not Applicable","guid":"248190","published":"28/12/2016 4:15:00 AM","data":{"level":0,"location":"785-811 Wallgrove Rd, Horsley Park, NSW 2175","council":"Fairfield","status":"Under control","type":"Other","fire":true,"size":"0 ha","agency":"Rural Fire Service","updated":1482898500000}},{"title":"Wallgrove Rd, Horsley Park","category":"Not Applicable","guid":"248190","published":"28/12/2016 4:15:00 AM","data":{"level":0,"location":"785-811 Wallgrove Rd, Horsley Park, NSW 2175","council":"Fairfield","status":"Under control","type":"Other","fire":true,"size":"0 ha","agency":"Rural Fire Service","updated":1482898500000}}]}*/
-
             let count = 0
             let mfcontainer = $(`<div class="container"></div>`)
             let container = $(`<div class="container"></div>`)
@@ -182,10 +180,10 @@ let fire = () => {
                             let type = $(`<span class="value"></span>`)
                             let status = $(`<span class="value"></span>`)
 
-                fire.css("color", colors[v.data.level])
+                fire.css("color", colors[v.level])
                 place.text(v.title)
-                type.text(v.data.type)
-                status.text(v.data.status)
+                type.text(v.type)
+                status.text(v.status)
 
                 if (count > 2) {
                     console.info(true)
