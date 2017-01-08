@@ -201,7 +201,7 @@ let fire = () => {
                 content.append(info)
                 box.append(content)
 
-                if (v.data.level > 1) {
+                if (v.level > 1) {
                     mfcontainer.append(box)
                 } else {
                     ++count
