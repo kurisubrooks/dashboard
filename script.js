@@ -1,10 +1,12 @@
 let socket = io("http://shake.kurisubrooks.com:3390")
 let sound_alarm = new Audio("./audio/alarm.mp3")
 let sound_alert = new Audio("./audio/nhk.mp3")
+let sound_emergency = new Audio("./audio/EWS.mp3")
+let storage = { }
 let map
 let marker
 
-let getUrlParams = function(search) {
+let getUrlParams = (search) => {
     let PageURL = decodeURIComponent(window.location.search.substring(1)),
         URLVariables = PageURL.split("&"), ParamName
 
@@ -47,7 +49,7 @@ let clock = () => {
 let weather = () => {
     console.log("GET: Weather")
 
-    let UV = function(index) {
+    let UV = (index) => {
         if (index === 0)
             return "None"
         else if (index === 1 || index === 2)
@@ -67,7 +69,7 @@ let weather = () => {
     $.ajax({
         url: "http://kurisu.pw/api/weather",
         dataType: "json",
-        success: function(data) {
+        success: (data) => {
             console.log("OK: Weather")
 
             $("#weather #icon").attr("src", data.weather.image)
@@ -123,7 +125,7 @@ let weather = () => {
                 $("#weather #forecast").html(all)
             })
         },
-        error: function(data) {
+        error: (data) => {
             console.error("ERR: Weather")
             console.error(data)
         }
@@ -136,13 +138,13 @@ let aqi = () => {
     $.ajax({
         url: "http://kurisu.pw/api/aqi",
         dataType: "json",
-        success: function(data) {
+        success: (data) => {
             console.log("OK: AQI")
 
             //$("#weather #aqi").css("color", data.aqi.color)
             $("#weather #aqi").text(data.aqi.value + ", " + data.aqi.level)
         },
-        error: function(data) {
+        error: (data) => {
             console.error("ERR: AQI")
             console.error(data)
         }
@@ -162,7 +164,7 @@ let fire = () => {
     $.ajax({
         url: "http://kurisu.pw/api/fire",
         dataType: "json",
-        success: function(data) {
+        success: (data) => {
             console.log("OK: Fire")
 
             let count = 0
@@ -212,20 +214,20 @@ let fire = () => {
             $("#majorfires").html(mfcontainer)
             $("#fires").html(container)
         },
-        error: function(data) {
+        error: (data) => {
             console.error("ERR: Fire")
             console.error(data)
         }
     })
 }
 
-let shake = function () {
+let shake = () => {
     console.log("GET: Shake")
 
     $.ajax({
         url: "http://shake.kurisubrooks.com:3390/api/quake.last",
         dataType: "json",
-        success: function(data) {
+        success: (data) => {
             console.log("OK: Shake")
 
             $("#text #seismic").text(data.details.seismic.en)
@@ -233,14 +235,14 @@ let shake = function () {
             $("#text #depth").text(data.details.geography.depth + "km")
             $("#text #epicenter").text(data.details.epicenter.en)
         },
-        error: function(data) {
+        error: (data) => {
             console.error("ERR: Shake")
             console.error(data)
         }
     })
 }
 
-let eew = function(data) {
+let eew = (data) => {
     data = typeof data !== "object" ? JSON.parse(data) : data
 
     $("#text #seismic").text(data.details.seismic.en)
@@ -257,7 +259,7 @@ let eew = function(data) {
     else
         sound_alert.play()
 
-    let reset = function(time) {
+    let reset = (time) => {
         setTimeout(() => {
             $(".sidebar").css("background", "#2A2A2A")
             $("html").css("background", "#333333")
@@ -285,24 +287,22 @@ socket.on("disconnect", () => {
     console.error("DC: Socket")
 })
 
-socket.on("auth", function(data) {
+socket.on("auth", (data) => {
     if (data.ok)
         console.log("OK: Socket")
     else
         console.log("ERR: Socket - bad auth")
 })
 
-socket.on("quake.eew", function(data) {
+socket.on("quake.eew", (data) => {
     eew(data)
 })
 
 $(function() {
     setInterval(clock, 200)
-    setInterval(() => {
-        weather()
-        fire()
-        aqi()
-    }, 2 * 60 * 1000)
+    setInterval(fire, 1 * 60 * 1000)
+    setInterval(weather, 5 * 60 * 1000)
+    setInterval(aqi, 10 * 60 * 1000)
 
     initMap()
     clock()
