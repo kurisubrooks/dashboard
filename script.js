@@ -2,10 +2,11 @@ let socket = io("http://shake.kurisubrooks.com:3390")
 let sound_alarm = new Audio("./audio/alarm.mp3")
 let sound_alert = new Audio("./audio/nhk.mp3")
 let sound_emergency = new Audio("./audio/EWS.mp3")
-let storage = { }
+let storage = { fires: [] }
 let map
 let marker
 
+// Helper Functions
 let getUrlParams = (search) => {
     let PageURL = decodeURIComponent(window.location.search.substring(1)),
         URLVariables = PageURL.split("&"), ParamName
@@ -17,12 +18,14 @@ let getUrlParams = (search) => {
     }
 }
 
+// Define Epicenter Icon for Map
 let epicenter_icon = L.icon({
     iconUrl: "https://i.imgur.com/jFs4ZRf.png",
     iconSize: [28, 28],
     iconAnchor: [14, 14]
 })
 
+// Initialise Leaflet
 let initMap = () => {
     map = L.map("map").setView([32.5, 129.2], 6)
     marker = L.marker([32.5, 129.2], { icon: epicenter_icon }).addTo(map)
@@ -33,6 +36,7 @@ let initMap = () => {
     }).addTo(map)
 }
 
+// Date/Time ( Clock )
 let jp_dotw = [ "日", "月", "火", "水", "木", "金", "土" ]
 
 let clock = () => {
@@ -46,6 +50,7 @@ let clock = () => {
     }
 }
 
+// Local Weather
 let weather = () => {
     console.log("GET: Weather")
 
@@ -132,6 +137,7 @@ let weather = () => {
     })
 }
 
+// Air Quality Index
 let aqi = () => {
     console.log("GET: AQI")
 
@@ -151,6 +157,7 @@ let aqi = () => {
     })
 }
 
+// RFS ( Bush, Grass Fires )
 let fire = () => {
     console.log("GET: Fire")
 
@@ -205,6 +212,11 @@ let fire = () => {
 
                 if (v.level > 1) {
                     mfcontainer.append(box)
+
+                    if (storage.fires.indexOf(v.guid) === -1) {
+                        sound_emergency.play()
+                        storage.fires.push(v.guid)
+                    }
                 } else {
                     ++count
                     container.append(box)
@@ -221,6 +233,7 @@ let fire = () => {
     })
 }
 
+// Japanese Earthquakes
 let shake = () => {
     console.log("GET: Shake")
 
@@ -298,6 +311,7 @@ socket.on("quake.eew", (data) => {
     eew(data)
 })
 
+// Startup
 $(function() {
     setInterval(clock, 200)
     setInterval(fire, 1 * 60 * 1000)
