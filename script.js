@@ -72,7 +72,7 @@ let weather = () => {
     }
 
     $.ajax({
-        url: "http://kurisu.pw/api/weather",
+        url: "https://api.kurisubrooks.com/api/weather",
         dataType: "json",
         success: (data) => {
             console.log("OK: Weather")
@@ -142,7 +142,7 @@ let aqi = () => {
     console.log("GET: AQI")
 
     $.ajax({
-        url: "http://kurisu.pw/api/aqi",
+        url: "https://api.kurisubrooks.com/api/aqi",
         dataType: "json",
         success: (data) => {
             console.log("OK: AQI")
@@ -169,7 +169,7 @@ let fire = () => {
     }
 
     $.ajax({
-        url: "http://kurisu.pw/api/fire",
+        url: "https://api.kurisubrooks.com/api/fire",
         dataType: "json",
         success: (data) => {
             console.log("OK: Fire")
