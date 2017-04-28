@@ -210,6 +210,10 @@ ul, ol, li {
     color: rgba(255, 255, 255, 0.6);
 }
 
+.forecast li #icon {
+    padding-top: 5px;
+}
+
 #fires,
 #majorfires {
     margin-top: -20px;
