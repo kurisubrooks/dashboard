@@ -1,138 +1,7 @@
 /* eslint-disable no-undef */
-var socket = io("http://shake.kurisubrooks.com:3390");
-var sound_alarm = new Audio("./audio/alarm.mp3");
-var sound_alert = new Audio("./audio/nhk.mp3");
 var sound_emergency = new Audio("./audio/ews.mp3");
 var jp_dotw = ["日", "月", "火", "水", "木", "金", "土"];
 var storage = { fires: [] };
-var map, marker;
-
-// Define Epicenter Icon for Map
-var epicenter_icon = L.icon({
-    iconUrl: "https://i.imgur.com/jFs4ZRf.png",
-    iconSize: [28, 28],
-    iconAnchor: [14, 14]
-});
-
-// Initialise Leaflet
-function initMap() {
-    map = L.map("map").setView([32.5, 129.2], 6);
-    marker = L.marker([32.5, 129.2], { icon: epicenter_icon }).addTo(map);
-
-    L.gridLayer.googleMutant({
-        type: "roadmap",
-        styles: [
-            {
-                "featureType": "all",
-                "elementType": "labels.text.fill",
-                "stylers": [
-                    { "saturation": 36 },
-                    { "color": "#2A2A2A" },
-                    { "lightness": 40 }
-                ]
-            },
-            {
-                "featureType": "all",
-                "elementType": "labels.text.stroke",
-                "stylers": [
-                    { "visibility": "on" },
-                    { "color": "#000000" },
-                    { "lightness": 16 }
-                ]
-            },
-            {
-                "featureType": "all",
-                "elementType": "labels.icon",
-                "stylers": [
-                    { "visibility": "on" }
-                ]
-            },
-            {
-                "featureType": "administrative",
-                "elementType": "geometry.fill",
-                "stylers": [
-                    { "color": "#000000" },
-                    { "lightness": 20 }
-                ]
-            },
-            {
-                "featureType": "administrative",
-                "elementType": "geometry.stroke",
-                "stylers": [
-                    { "visibility": "off" },
-                    { "color": "#2A2A2A" },
-                    { "lightness": 17 },
-                    { "weight": 1.2 }
-                ]
-            },
-            {
-                "featureType": "landscape",
-                "elementType": "geometry",
-                "stylers": [
-                    { "color": "#000000" },
-                    { "lightness": 20 }
-                ]
-            },
-            {
-                "featureType": "poi",
-                "elementType": "geometry",
-                "stylers": [
-                    { "color": "#000000" },
-                    { "lightness": 21 }
-                ]
-            },
-            {
-                "featureType": "road.highway",
-                "elementType": "geometry.fill",
-                "stylers": [
-                    { "color": "#000000" },
-                    { "lightness": 17 }
-                ]
-            },
-            {
-                "featureType": "road.highway",
-                "elementType": "geometry.stroke",
-                "stylers": [
-                    { "color": "#000000" },
-                    { "lightness": 29 },
-                    { "weight": 0.2 }
-                ]
-            },
-            {
-                "featureType": "road.arterial",
-                "elementType": "geometry",
-                "stylers": [
-                    { "color": "#999999" },
-                    { "lightness": 18 }
-                ]
-            },
-            {
-                "featureType": "road.local",
-                "elementType": "geometry",
-                "stylers": [
-                    { "color": "#999999" },
-                    { "lightness": 16 }
-                ]
-            },
-            {
-                "featureType": "transit",
-                "elementType": "geometry",
-                "stylers": [
-                    { "color": "#000000" },
-                    { "lightness": 19 }
-                ]
-            },
-            {
-                "featureType": "water",
-                "elementType": "geometry",
-                "stylers": [
-                    { "color": "#000000" },
-                    { "lightness": 15 }
-                ]
-            }
-        ]
-    }).addTo(map);
-}
 
 // Clock
 function clock() {
@@ -169,7 +38,7 @@ function weather() {
     }
 
     $.ajax({
-        url: "https://api.kurisubrooks.com/api/weather",
+        url: "https://api.kurisubrooks.com/api/weather?location=marayong",
         dataType: "json",
         success: function(data) {
             console.log("OK: Weather");
@@ -310,69 +179,8 @@ function fire() {
     });
 }
 
-function eew(data) {
-    data = typeof data !== "object" ? JSON.parse(data) : data;
-
-    $("#text #seismic").text(data.details.seismic.en);
-    $("#text #magnitude").text(data.details.magnitude);
-    $("#text #depth").text(data.details.geography.depth + "km");
-    $("#text #epicenter").text(data.details.epicenter.en);
-
-    $(".overlay").show();
-    $(".sidebar").css("background", "#C62E2E");
-    $("html").css("background", "#DA3838");
-
-    if (data.alarm) {
-        sound_alarm.play();
-    } else {
-        sound_alert.play();
-    }
-
-    function reset(time) {
-        setTimeout(function() {
-            $(".sidebar").css("background", "#2A2A2A");
-            $("html").css("background", "#333333");
-            $(".overlay").fadeOut("fast");
-        }, time ? time : 50);
-    }
-
-    if (data.situation !== 0) {
-        if (data.situation === 1) {
-            reset(60 * 1000);
-        } else if (data.situation === 2) {
-            reset();
-        }
-    }
-
-    map.setView([data.details.geography.lat, data.details.geography.long], 6);
-    marker.setLatLng([data.details.geography.lat, data.details.geography.long]).update();
-    map.invalidateSize();
-}
-
-socket.on("connect", function() {
-    socket.emit("auth", { version: 2.1 });
-});
-
-socket.on("disconnect", function() {
-    console.error("DC: Socket");
-});
-
-socket.on("auth", function(data) {
-    if (data.ok) {
-        console.log("OK: Socket");
-    } else {
-        console.log("ERR: Socket - bad auth");
-    }
-});
-
-socket.on("quake.eew", function(data) {
-    eew(data);
-});
-
 // Start
 $(function() {
-    initMap();
-
     // Data Providers
     clock();
     setInterval(clock, 200);
@@ -382,13 +190,4 @@ $(function() {
 
     weather();
     setInterval(weather, 5 * 60 * 1000);
-
-    // Shake Test
-    /* setTimeout(function() {
-        eew({"id":20161228164030,"drill":false,"alarm":true,"situation":0,"revision":4,"details":{"announced":"2016/12/28 16:41:31","occurred":"2016/12/28 16:40:14","magnitude":3.8,"epicenter":{"id":0,"en":"Sanpachikamikita, Aomori Prefecture","ja":"三八上北地方青森県"},"seismic":{"en":"2","ja":"2"},"geography":{"lat":40.8,"long":141.2,"depth":10,"offshore":false}}})
-    }, 4000);
-
-    setTimeout(function() {
-        eew({"id":20161228164030,"drill":false,"alarm":false,"situation":1,"revision":4,"details":{"announced":"2016/12/28 16:41:31","occurred":"2016/12/28 16:40:14","magnitude":3.8,"epicenter":{"id":189,"en":"Offshore South Eastern Nemuro Peninsula","ja":"根室半島南東沖"},"seismic":{"en":"2","ja":"2"},"geography":{"lat":43,"long":146.6,"depth":10,"offshore":true}}})
-    }, 6800); */
 });
