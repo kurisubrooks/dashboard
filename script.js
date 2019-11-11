@@ -115,7 +115,7 @@ function fire() {
     };
 
     $.ajax({
-        url: "https://api.kurisubrooks.com/api/fire",
+        url: "https://api.kurisubrooks.com/api/fire?filter=emergency",
         dataType: "json",
         success: function(data) {
             console.log("OK: Fire");
